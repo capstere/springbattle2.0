@@ -1,21 +1,21 @@
 /* ========================================================================
-   styles.css – Hela stilmallen med kommentarer
+   styles.css – Komplett stilmall med kommentarer
    ======================================================================== */
 
 /* === 1. Färgvariabler och grundinställningar === */
 :root {
   --bg: #3b682d;           /* Bakgrundsfärg */
   --fg: #fff;              /* Textfärg */
-  --card-bg: rgba(255,255,255,0.15); /* Bakgrund färg på kort */
-  --btn-bg: #f1fbc1;       /* Bakgrund för knappar/inmatningar */
-  --btn-fg: #000;          /* Textfärg på knappar/inmatningar */
-  --accent: #ffdd57;       /* Accentfärg (timer, highlights) */
-  --radius: 8px;           /* Rundade hörn */
-  --shadow: 0 2px 8px rgba(0,0,0,0.2); /* Skugga på kort */
-  --error: #ff4444;        /* Färg för fel-text */
-  --success: #8bc34a;      /* Färg för tipstext */
+  --card-bg: rgba(255,255,255,0.15); /* Bakgrund för kort */
+  --btn-bg: #f1fbc1;       /* Bakgrund för knappar och input */
+  --btn-fg: #000;          /* Textfärg i knappar och input */
+  --accent: #ffdd57;       /* Accentfärg (timer, highlight) */
+  --radius: 8px;           /* Hörnradie */
+  --shadow: 0 2px 8px rgba(0,0,0,0.2); /* Kort-skogga */
+  --error: #ff4444;        /* Färg för felmeddelanden */
+  --success: #8bc34a;      /* Färg för tips/hint */
   --font: -apple-system, Roboto, sans-serif; /* Standardfont */
-  --text-shadow: 0 1px 2px rgba(0,0,0,0.7);    /* Lätt skugga på text */
+  --text-shadow: 0 1px 2px rgba(0,0,0,0.7);    /* Lätt textskugga */
 }
 
 /* === 2. Global reset och box-sizing === */
@@ -39,8 +39,7 @@ body {
 .wrapper {
   width: 100%;
   max-width: 480px;
-  /* Ger plats för botten‐navbar */
-  padding-bottom: 4rem;
+  padding-bottom: 4rem;  /* Ger plats för navbar längst ned */
 }
 
 /* === 4. Header, titel, timer och progress === */
@@ -158,7 +157,7 @@ button:focus-visible {
   to   { opacity: 1; }
 }
 
-/* === 9. Visuella feedback-animationsklasser === */
+/* === 9. Feedback-animationsklasser === */
 .card.correct {
   animation: blink-green .5s;
 }
@@ -178,24 +177,7 @@ button:focus-visible {
   100% { transform: translateX(0); }
 }
 
-/* === 10. Magic‐grid (magisk kvadrat) === */
-.magic-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-}
-.magic-cell,
-.magic-fixed {
-  padding: .5rem;
-  text-align: center;
-  background: var(--btn-bg);
-  border-radius: var(--radius);
-}
-.magic-cell {
-  width: 100%;
-}
-
-/* === 11. Startsida (intro-vy) === */
+/* === 10. Startsida (intro) === */
 .start-card {
   text-align: center;
 }
@@ -217,7 +199,7 @@ button:focus-visible {
   filter: brightness(0.9);
 }
 
-/* === 12. Botten‐navbar === */
+/* === 11. Botten‐navbar === */
 .navbar {
   display: flex;
   justify-content: space-around;
@@ -237,25 +219,25 @@ button:focus-visible {
   flex-direction: column;
   align-items: center;
   opacity: .7;
+  pointer-events: auto;
 }
 .nav-btn.disabled {
-  opacity: .3;      /* Inaktiva flikar */
+  opacity: .3;             /* Inaktiva flikar */
   pointer-events: none;
 }
 .nav-btn.active {
-  opacity: 1;       /* Aktuell flik */
+  opacity: 1;               /* Aktiv flik */
 }
 .nav-btn img {
   width: 24px;
   height: 24px;
   margin-bottom: .25rem;
-  /* Ingen transform på active/hover – bara färgbyte */
 }
 .nav-btn span {
   font-size: .9rem;
 }
 
-/* === 13. Statiska sidor (Vår/Kamp/Hjälp) === */
+/* === 12. Statiska flikar (Vår/Kamp/Hjälp) === */
 .static-icon {
   display: block;
   margin: 1rem auto;
@@ -274,14 +256,8 @@ button:focus-visible {
   border: 2px solid var(--btn-fg);
   border-radius: var(--radius);
 }
-.static-img {
-  display: block;
-  margin: 1rem auto;
-  max-width: 100%;
-  border-radius: var(--radius);
-}
 
-/* === 14. Modal för bildförstoring på Vår-sidan === */
+/* === 13. Modal för bildförstoring på Vår-sidan === */
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -315,6 +291,43 @@ button:focus-visible {
   padding: .25rem .5rem;
   border-radius: 50%;
   cursor: pointer;
+}
+
+/* === 14. Magic‐grid (magisk kvadrat) === */
+.magic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;               /* Lite mer mellanrum */
+  margin: 1rem auto;      /* Centrera */
+  max-width: 360px;       /* Begränsa bredd */
+}
+.magic-fixed {
+  background: var(--card-bg);
+  color: var(--fg);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  padding: .75rem 0;
+}
+.magic-cell {
+  background: var(--btn-bg);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+}
+.magic-cell input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--btn-fg);
+  outline: none;
+}
+.magic-cell input::placeholder {
+  color: rgba(0,0,0,0.3);
 }
 
 /* === 15. Form & summary för sista gåtan === */
@@ -378,7 +391,7 @@ button:disabled {
   margin-bottom: .75rem;
 }
 
-/* === 16. Responsiv justering för mindre enheter === */
+/* === 16. Responsiv justering === */
 @media (max-width: 400px) {
   header h1 {
     font-size: 1.5rem;
@@ -389,45 +402,4 @@ button:disabled {
   .start-icon {
     width: 120px;
   }
-}
-
-/* === 17. Magiska kvadraten – snyggare styling === */
-.magic-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;                    /* li­te mer mellanrum */
-  margin: 1rem auto;           /* centrera */
-  max-width: 360px;            /* begränsa bredd */
-}
-
-.magic-fixed {
-  background: var(--card-bg);
-  color: var(--fg);
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
-  padding: 0.75rem 0;
-}
-
-.magic-cell {
-  background: var(--btn-bg);
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: var(--radius);
-}
-
-.magic-cell input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--btn-fg);
-  outline: none;
-}
-
-.magic-cell input::placeholder {
-  color: rgba(0,0,0,0.3);
 }
