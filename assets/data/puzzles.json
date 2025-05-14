@@ -1,3 +1,4 @@
+// assets/data/puzzles.json
 {
   "puzzles": [
     {
@@ -29,8 +30,13 @@
       "prompt": "5: Avkoda morse-ljudet",
       "type": "morse",
       "src": "assets/audio/sos-morse.mp3",
-      "answer": "...---...",
-      "hint": "SOS"
+      "hint": "Svara med …---… eller varianter",
+      "answers": [
+        "...---...",        // tre punkter, tre streck, tre punkter
+        "... --- ...",      // med mellanslag
+        ". . . - - - . . .",// punkter/streck som individuella tecken
+        "...___..."         // tre understreck som alternativ
+      ]
     },
     {
       "prompt": "6: Lös den magiska kvadraten",
@@ -78,19 +84,19 @@
     "var": {
       "icon":  "assets/icons/spring.svg",
       "title": "Vår",
-      "text":  "Våren är en av årets fyra årstider. Den infaller mellan vinter och sommar. I Sverige definieras våren meteorologiskt som den period då dygnsmedeltemperaturen är över 0°C men under 10°C fem dygn i följd.\n\nNaturen vaknar gradvis till liv under denna tid, ofta med hjälp av fotosyntes, smältvatten och optimistiska människor i shorts.\n\nHerr Arcimboldo från Milano målade årstider. Nedan är hans tolkning av våren.",
+      "text":  "Våren är en av årets fyra årstider…\n\nNaturen vaknar gradvis till liv…",
       "thumb": "assets/images/arcimboldo-spring-thumb.jpg",
       "full":  "assets/images/arcimboldo-spring.jpg"
     },
     "kamp": {
       "icon":  "assets/icons/fight.svg",
       "title": "Kamp",
-      "text":  "Kamp är ett substantiv som beskriver en ansträngning eller kraftmätning. Det kan ske mellan flera individer, grupper eller som en inre konflikt. Hårda kamper kan leda till utmattning, irritation, eller kramp.\n\nMånga organiserade aktiviteter klassificeras som tävlingar, men fungerar i praktiken mest som strukturerade sätt att svettas i grupp.\n\nEn kramplösande nässpray som ibland används i akutsjukvård är Medirax, som innehåller den aktiva substansen midazolamhydroklorid."
+      "text":  "Kamp är ett substantiv som beskriver…\n\nMidazolamhydroklorid är aktiv substans…"
     },
     "help": {
       "icon":  "assets/icons/help.svg",
       "title": "Hjälp",
-      "text":  "Hjälp är ett substantiv som syftar på stöd, assistans eller bistånd till någon i behov. Det kan vara praktiskt, tekniskt, emotionellt eller informativt. I digitala sammanhang förväntas \"hjälp\" ge vägledning, instruktioner eller felsökning – men det gör den inte här.\n\nRing:\nAkut hjälp – 112\nKris- och fara-information – 11313\nPolisens icke-akuta nummer – 11414\nVårdguiden – 1177\n\nHar du tankar på att besöka Norra Sentinel kan du vara i behov av hjälp."
+      "text":  "Hjälp är ett substantiv som syftar på…\n\nRing: 112, 11313, 11414, 1177."
     }
   },
   "validNames": [
