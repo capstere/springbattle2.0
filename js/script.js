@@ -2,34 +2,44 @@
 (() => {
   'use strict';
 
+  // -----------------------------
   // Elementreferenser
-  const app     = document.getElementById('app');
-  const timerEl = document.getElementById('timer');
-  const progEl  = document.getElementById('progress');
-  const navBtns = {
+  // -----------------------------
+  const app       = document.getElementById('app');       // Huvudcontainer för all dynamisk rendering
+  const timerEl   = document.getElementById('timer');    // Visar den löpande timern
+  const progEl    = document.getElementById('progress'); // Visar "Gåta X av Y" eller sidtitel
+  const navBtns   = {                                    // Navigeringsknappar längst ner
     play: document.getElementById('nav-play'),
     var:  document.getElementById('nav-var'),
     kamp: document.getElementById('nav-kamp'),
     help: document.getElementById('nav-help')
   };
-  const sounds = {
+  const sounds    = {                                   // Förinlästa ljud
     correct: document.getElementById('audio-correct'),
     wrong:   document.getElementById('audio-wrong'),
     finish:  document.getElementById('audio-finish')
   };
 
-  // Globala state
-  let puzzles       = [];
-  let staticPages   = {};
-  let validNames    = [];
-  let current       = 0;
-  let startTime     = 0;
-  let timerId       = null;
-  let puzzleAudio   = null;
-  let failCount     = 0;
-  let started       = false;
+  // -----------------------------
+  // Globalt state
+  // -----------------------------
+  let puzzles     = [];  // Lista med gåtor, hämtas från puzzles.json
+  let staticPages = {};  // Konfiguration för Vår/Kamp/Hjälp
+  let validNames  = [];  // Godkända namn för gåta 1
+  let current     = 0;   // Index för aktuell gåta
+  let startTime   = 0;   // Timestamp när tävlingen startades
+  let timerId     = null;// ID från setInterval för timern
+  let puzzleAudio = null;// Ljud för audio- och morse-gåtor
+  let failCount   = 0;   // Räknar antal felförsök per gåta
+  let started     = false; // Har användaren tryckt 'Starta tävlingen'?
 
+  // -----------------------------
   // Hjälpfunktioner
+  // -----------------------------
+
+  /**
+   * Kontrollera om ett tal är primtal.
+   */
   function isPrime(n) {
     if (n < 2) return false;
     for (let i = 2; i * i <= n; i++) {
@@ -37,55 +47,82 @@
     }
     return true;
   }
+
+  /**
+   * Ge haptic feedback på mobil.
+   */
   function vibrate(pattern) {
     navigator.vibrate?.(pattern);
   }
+
+  /**
+   * Spela ett av ljuden 'correct', 'wrong' eller 'finish'.
+   */
   function play(type) {
-    const a = sounds[type];
-    if (a) {
-      a.currentTime = 0;
-      a.play().catch(() => {});
+    const audio = sounds[type];
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
     }
     if (type === 'correct') vibrate(200);
     if (type === 'wrong')   vibrate([100,50,100]);
   }
-  function showError(el, msg) {
-    el.textContent = msg;
+
+  /**
+   * Visa ett felmeddelande i msgEl.
+   */
+  function showError(msgEl, msg) {
+    msgEl.textContent = msg;
   }
-  function clearAnim(el) {
-    el.classList.remove('correct','shake');
+
+  /**
+   * Ta bort animationsklasser från ett kort.
+   */
+  function clearAnim(card) {
+    card.classList.remove('correct', 'shake');
   }
+
+  /**
+   * Uppdatera timern på skärmen.
+   */
   function updateTimer() {
-    const d  = Date.now() - startTime;
-    const mm = String(Math.floor(d/60000)).padStart(2,'0');
-    const ss = String(Math.floor((d%60000)/1000)).padStart(2,'0');
+    const elapsed = Date.now() - startTime;
+    const mm = String(Math.floor(elapsed / 60000)).padStart(2, '0');
+    const ss = String(Math.floor((elapsed % 60000) / 1000)).padStart(2, '0');
     timerEl.textContent = `${mm}:${ss}`;
   }
 
-  // Init – hämta puzzles.json, preload, bind navigation
+  // -----------------------------
+  // Init: Hämta data och bind navigation
+  // -----------------------------
   async function init() {
-    const res        = await fetch('assets/data/puzzles.json');
-    const data       = await res.json();
-    puzzles          = data.puzzles;
-    staticPages      = data.staticPages;
-    validNames       = data.validNames;
+    // Hämta puzzles, statiska sidor och validNames
+    const res  = await fetch('assets/data/puzzles.json');
+    const data = await res.json();
+    puzzles     = data.puzzles;
+    staticPages = data.staticPages;
+    validNames  = data.validNames;
 
-    // Preload ljud & bild
+    // Preload ljudfiler
     Object.values(sounds).forEach(a => a.load());
-    const stegPuzzle = puzzles.find(p => p.type === 'stego');
-    if (stegPuzzle) new Image().src = stegPuzzle.img;
+    // Preload stego-bild
+    const steg = puzzles.find(p => p.type === 'stego');
+    if (steg) new Image().src = steg.img;
 
-    // Bind nav-knappar
+    // Bind navigationsknappar
     Object.keys(navBtns).forEach(key => {
       navBtns[key].addEventListener('click', () => activateTab(key));
     });
 
-    // Till en början: lås utom Spela
+    // Inledningsvis låser vi Vår/Kamp/Hjälp tills start
     setNavEnabled(false);
+    // Visa start-fliken
     activateTab('play');
   }
 
-  // Aktivera/inaktivera flikar
+  // -----------------------------
+  // Lås/lås upp navigeringsflikar
+  // -----------------------------
   function setNavEnabled(enabled) {
     ['var','kamp','help'].forEach(key => {
       navBtns[key].disabled = !enabled;
@@ -93,55 +130,67 @@
     });
   }
 
-  // Växla flik
+  // -----------------------------
+  // Växla flik (Spela, Vår, Kamp, Hjälp)
+  // -----------------------------
   function activateTab(tab) {
-    // Markera aktiv ikon + text
-    Object.values(navBtns).forEach(b => b.classList.remove('active'));
+    // Markera aktiv knapp
+    Object.values(navBtns).forEach(btn => btn.classList.remove('active'));
     navBtns[tab].classList.add('active');
-    // Stoppa befintlig timer
+
+    // Stoppa eventuell timer-uppdatering
     clearInterval(timerId);
 
+    // Välj vy
     if (tab === 'play') {
+      // Spela-fliken visar antingen intro eller gåta
       if (!started) showIntro();
       else renderPuzzle(current);
     } else {
+      // Statiska sidor
       showStatic(tab);
     }
   }
 
-  // Visa startvy
+  // -----------------------------
+  // Visa startskärm med icon-512 & Starta-knapp
+  // -----------------------------
   function showIntro() {
     progEl.textContent = '';
     app.innerHTML = `
       <div class="card">
+        <!-- Stor huvudikon -->
+        <img src="assets/images/icon-512.png" class="start-icon" alt="VÅRKAMP⁵">
         <p class="prompt">Välkommen till tävlingsgren 5!</p>
         <button id="startBtn">Starta tävlingen</button>
       </div>`;
     document.getElementById('startBtn').addEventListener('click', () => {
-      started = true;
+      // Starta tävlingen
+      started    = true;
       setNavEnabled(true);
-      startTime = Date.now();
+      startTime  = Date.now();
       updateTimer();
-      timerId = setInterval(updateTimer, 500);
+      timerId    = setInterval(updateTimer, 500);
       renderPuzzle(0);
     });
   }
 
+  // -----------------------------
   // Visa statisk sida (Vår/Kamp/Hjälp)
+  // -----------------------------
   function showStatic(key) {
-    // Behåll timer-text, ändra bara progress
+    // Behåll timer-text
     progEl.textContent = staticPages[key].title;
     const d = staticPages[key];
-
     app.innerHTML = `
       <div class="card">
-        <img src="${d.icon}" class="static-icon" alt="">
+        <img src="${d.icon}" class="static-icon" alt="${d.title}">
         <h2>${d.title}</h2>
         <p class="static-text">${d.text.replace(/\n/g,'<br>')}</p>
-        ${d.thumb ? `<img src="${d.thumb}" id="static-thumb" class="static-thumb" alt="">` : ''}
+        ${d.thumb ? `<img src="${d.thumb}" id="static-thumb" class="static-thumb" alt="Thumbnail">` : ''}
       </div>`;
 
-    // Modal-förstoring i “Vår”
+    // Speciallogik för Vår-fliken: klickbar thumbnail och modal
     if (key === 'var' && d.thumb) {
       const thumb    = document.getElementById('static-thumb');
       const modal    = document.getElementById('img-modal');
@@ -165,14 +214,16 @@
     }
   }
 
-  // Rendera gåta
+  // -----------------------------
+  // Rendera en gåta baserat på index
+  // -----------------------------
   function renderPuzzle(i) {
     const p = puzzles[i];
     if (!p) {
       finishGame();
       return;
     }
-    current = i;
+    current   = i;
     failCount = 0;
     progEl.textContent = `Gåta ${i+1} av ${puzzles.length}`;
     app.innerHTML = '';
@@ -181,6 +232,7 @@
       puzzleAudio = null;
     }
 
+    // Skapa kortet
     const card = document.createElement('div');
     card.className = 'card';
     const prm = document.createElement('div');
@@ -188,8 +240,10 @@
     prm.textContent = p.prompt;
     card.append(prm);
 
+    // Element för svar, fel & tips
     let inputEl, msgEl, hintEl;
 
+    // Bygg UI baserat på gåtetyp
     switch (p.type) {
       case 'name':
       case 'text':
@@ -213,12 +267,12 @@
         break;
 
       case 'stego':
-        const img = document.createElement('img');
-        img.src = p.img;
-        img.alt = 'Stegobild';
-        img.style.filter = 'brightness(0)';
-        img.addEventListener('click', () => img.style.filter = '');
-        card.append(img);
+        const stegImg = document.createElement('img');
+        stegImg.src = p.img;
+        stegImg.alt = 'Stegobild';
+        stegImg.style.filter = 'brightness(0)';
+        stegImg.addEventListener('click', () => stegImg.style.filter = '');
+        card.append(stegImg);
         inputEl = document.createElement('input');
         inputEl.placeholder = p.hint;
         card.append(inputEl);
@@ -289,24 +343,30 @@
         return;
     }
 
+    // Fel- och tipselement
     msgEl  = document.createElement('div'); msgEl.className  = 'error-msg';
     hintEl = document.createElement('div'); hintEl.className = 'hint-msg';
     if (p.hint) hintEl.textContent = `Tips: ${p.hint}`;
     card.append(msgEl, hintEl);
 
-    const send = document.createElement('button');
-    send.textContent = 'Skicka';
-    send.addEventListener('click', () => checkAnswer(p, inputEl, msgEl, hintEl, card));
-    card.append(send);
+    // Skicka-knapp
+    const sendBtn = document.createElement('button');
+    sendBtn.textContent = 'Skicka';
+    sendBtn.addEventListener('click', () => checkAnswer(p, inputEl, msgEl, hintEl, card));
+    card.append(sendBtn);
 
+    // Rendera kortet
     app.append(card);
     inputEl?.focus();
   }
 
-  // Kontrollera svar
+  // -----------------------------
+  // Kontrollera svar och navigera vidare
+  // -----------------------------
   function checkAnswer(p, inputEl, msgEl, hintEl, card) {
     clearAnim(card);
 
+    // Prime-gåtan: dynamiskt svar = antal minuter
     if (p.type === 'prime') {
       const mins = Math.floor((Date.now() - startTime) / 60000);
       if (!isPrime(mins)) {
@@ -316,9 +376,11 @@
       p.answer = String(mins);
     }
 
+    // Läs in svar
     const ans = inputEl ? inputEl.value.trim().toLowerCase() : '';
     let ok = false;
 
+    // Jämför beroende på typ
     switch (p.type) {
       case 'name':
         ok = validNames.includes(ans);
@@ -346,20 +408,21 @@
           return;
         }
         const sz = p.size, t = p.target, M = [];
-        for (let r=0; r<sz; r++) {
+        for (let r = 0; r < sz; r++) {
           M[r] = vals.slice(r*sz, (r+1)*sz);
         }
-        ok = M.every(row => row.reduce((a,b) => a+b, 0) === t)
-          && Array.from({length:sz}).every(c => M.reduce((s,row) => s+row[c], 0) === t)
-          && M.reduce((s,row,r) => s+row[r],0) === t
-          && M.reduce((s,row,r) => s+row[sz-1-r],0) === t;
+        ok = M.every(row => row.reduce((a,b) => a+b,0) === t)
+          && Array.from({length:sz}).every(c => M.reduce((s,row) => s+row[c],0) === t)
+          && M.reduce((s,row,r) => s+row[r], 0) === t
+          && M.reduce((s,row,r) => s+row[sz-1-r], 0) === t;
         break;
     }
 
+    // Hantera rätt/fel
     if (ok) {
-      play(current+1 < puzzles.length ? 'correct' : 'finish');
+      play(current + 1 < puzzles.length ? 'correct' : 'finish');
       card.classList.add('correct');
-      setTimeout(() => renderPuzzle(current+1), 500);
+      setTimeout(() => renderPuzzle(current + 1), 500);
     } else {
       play('wrong');
       card.classList.add('shake');
@@ -369,9 +432,13 @@
     }
   }
 
-  // Slutfas
+  // -----------------------------
+  // Finalvy: dokumentera trädet
+  // -----------------------------
   function renderFinal() {
     clearInterval(timerId);
+
+    // Slutfas-rendering
     const html = `
       <div class="card" id="final-form">
         <fieldset>
@@ -396,6 +463,7 @@
       </div>`;
     app.innerHTML = html;
 
+    // Hantera form och filuppladdning
     const photo   = document.getElementById('photo');
     const latinI  = document.getElementById('latin');
     const teamI   = document.getElementById('team');
@@ -407,6 +475,7 @@
     const outTime = document.getElementById('out-time');
     const outImg  = document.getElementById('out-image');
 
+    // Validera att alla fält är ifyllda
     function validate() {
       submit.disabled = !(
         photo.files.length === 1 &&
@@ -416,44 +485,49 @@
     }
     [photo, latinI, teamI].forEach(el => el.addEventListener('input', validate));
 
+    // Förhandsgranska uppladdad bild
     photo.addEventListener('change', () => {
       validate();
-      const f = photo.files[0];
-      if (!f) return;
-      if (f.size > 5*1024*1024) {
-        alert('Max 5 MB');
+      const file = photo.files[0];
+      if (!file) return;
+      if (file.size > 5*1024*1024) {
+        alert('Max 5 MB.');
         photo.value = '';
         preview.style.display = 'none';
         validate();
         return;
       }
-      const r = new FileReader();
-      r.onload = e => {
+      const reader = new FileReader();
+      reader.onload = e => {
         preview.src = e.target.result;
         preview.style.display = 'block';
       };
-      r.readAsDataURL(f);
+      reader.readAsDataURL(file);
     });
 
+    // Slutför dokumentation
     submit.addEventListener('click', () => {
-      const d  = Date.now() - startTime;
-      const mm = String(Math.floor(d/60000)).padStart(2,'0');
-      const ss = String(Math.floor((d%60000)/1000)).padStart(2,'0');
+      const elapsed = Date.now() - startTime;
+      const mm = String(Math.floor(elapsed/60000)).padStart(2,'0');
+      const ss = String(Math.floor((elapsed%60000)/1000)).padStart(2,'0');
       outTime.textContent = `${mm}:${ss}`;
       outLat.textContent  = latinI.value.trim();
       outTeam.textContent = teamI.value.trim();
 
-      const r = new FileReader();
-      r.onload = e => {
+      const reader = new FileReader();
+      reader.onload = e => {
         outImg.src = e.target.result;
         document.getElementById('final-form').style.display = 'none';
         summary.classList.add('visible');
         play('finish');
       };
-      r.readAsDataURL(photo.files[0]);
+      reader.readAsDataURL(photo.files[0]);
     });
   }
 
+  // -----------------------------
+  // När alla gåtor klara – visa tack-sida
+  // -----------------------------
   function finishGame() {
     clearInterval(timerId);
     play('finish');
@@ -464,5 +538,7 @@
       </div>`;
   }
 
+  // Starta init när sidan laddats
   document.addEventListener('DOMContentLoaded', init);
+
 })();
