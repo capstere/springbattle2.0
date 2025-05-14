@@ -1,66 +1,107 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
+  <!-- Meta- och titel-inställningar -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VÅRKAMP⁵</title>
   <meta name="theme-color" content="#3b682d">
   <meta name="description" content="Ett interaktivt 5-delat utomhuspussel med ljud, stego, kryptologi och dokumentation.">
+
+  <!-- PWA-manifest -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- Ikoner för webbläsare och uppstart (används på startsidan) -->
   <link rel="icon" href="assets/icons/play.svg">
   <link rel="apple-touch-icon" href="assets/icons/play.svg">
+
+  <!-- Huvud-CSS -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- Wrapper för hela appen -->
   <div class="wrapper">
+
+    <!-- Header med titel och timer -->
     <header>
       <h1>VÅRKAMP<sup>5</sup></h1>
+      <!-- Timer-visning -->
       <div id="timer" aria-live="polite">00:00</div>
+      <!-- Progress-visning (uppdateras per vy) -->
       <div id="progress" aria-live="polite"></div>
     </header>
-    <main id="app" role="main"></main>
 
-    <!-- Botten-navigering -->
+    <!-- Main-området: fylld dynamiskt av script.js -->
+    <main id="app" role="main">
+      <!-- Innehållet (startvy, gåtor, statiska sidor, final) renderas här via JavaScript -->
+    </main>
+
+    <!-- Botten-navigering mellan Spela/Vår/Kamp/Hjälp -->
     <nav class="navbar">
-      <button id="nav-play"  class="nav-btn active"><img src="assets/icons/play.svg" alt=""><span>Spela</span></button>
-      <button id="nav-var"   class="nav-btn"><img src="assets/icons/spring.svg" alt=""><span>Vår</span></button>
-      <button id="nav-kamp"  class="nav-btn"><img src="assets/icons/fight.svg" alt=""><span>Kamp</span></button>
-      <button id="nav-help"  class="nav-btn"><img src="assets/icons/help.svg" alt=""><span>Hjälp</span></button>
+      <!--
+        Varje knapp har:
+        - en unik ID för att script.js kan binda click-händelser
+        - klassen .nav-btn för gemensam styling
+        - inledningsvis .active på "Spela"
+      -->
+      <button id="nav-play"  class="nav-btn active">
+        <img src="assets/icons/play.svg" alt="Spela-ikon">
+        <span>Spela</span>
+      </button>
+      <button id="nav-var"   class="nav-btn disabled">
+        <img src="assets/icons/spring.svg" alt="Vår-ikon">
+        <span>Vår</span>
+      </button>
+      <button id="nav-kamp"  class="nav-btn disabled">
+        <img src="assets/icons/fight.svg" alt="Kamp-ikon">
+        <span>Kamp</span>
+      </button>
+      <button id="nav-help"  class="nav-btn disabled">
+        <img src="assets/icons/help.svg" alt="Hjälp-ikon">
+        <span>Hjälp</span>
+      </button>
     </nav>
 
-    <!-- Modal för bildförstoring -->
+    <!-- Modal för att förstora bilder på "Vår"-fliken -->
     <div id="img-modal" class="modal hidden">
       <div class="modal-content">
+        <!-- Stäng-knapp -->
         <button id="modal-close" class="modal-close">&times;</button>
+        <!-- Här sätts src dynamiskt av script.js -->
         <img id="modal-img" src="" alt="Förstorad bild">
       </div>
     </div>
-  </div>
 
-  <!-- Ljudeffekter -->
+  </div><!-- /.wrapper -->
+
+  <!-- Ljudeffekter som pre-loadas i JavaScript -->
   <audio id="audio-correct" src="assets/audio/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong"   src="assets/audio/wrong.mp3"   preload="auto"></audio>
   <audio id="audio-finish"  src="assets/audio/finish.mp3"  preload="auto"></audio>
 
+  <!-- Huvudskript: all rendering och logik -->
   <script defer src="js/script.js"></script>
+
+  <!-- Service Worker-registrering och update-banner -->
   <script>
-    // Service Worker + uppdaterings-banner
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
           .then(reg => {
+            // Visa update-banner om det finns en uppdatering väntande
             if (reg.waiting) showUpdate(reg);
             reg.addEventListener('updatefound', () => {
-              const ins = reg.installing;
-              ins.addEventListener('statechange', () => {
-                if (ins.state === 'installed' && navigator.serviceWorker.controller) {
+              const installing = reg.installing;
+              installing.addEventListener('statechange', () => {
+                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
                   showUpdate(reg);
                 }
               });
             });
           })
-          .catch(() => {});
+          .catch(() => { /* ignore errors */ });
       });
+      // Ladda om sidan när ny SW tar över
       navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
     }
     function showUpdate(reg) {
