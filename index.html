@@ -1,94 +1,117 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <!-- Meta- och titel-inställningar -->
+  <!-- =============================================================
+       Meta & titelinformation
+       ============================================================= -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VÅRKAMP⁵</title>
-  <meta name="theme-color" content="#3b682d">
   <meta name="description" content="Ett interaktivt 5-delat utomhuspussel med ljud, stego, kryptologi och dokumentation.">
+  <meta name="theme-color" content="#3b682d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <!-- PWA-manifest -->
+  <!-- =============================================================
+       PWA-manifest och scope
+       ============================================================= -->
   <link rel="manifest" href="manifest.json">
+  <!-- (scope anges i manifest.json) -->
 
-  <!-- Ikoner för webbläsare och uppstart (används på startsidan) -->
+  <!-- =============================================================
+       Favicon & Apple-touch-icon
+       ============================================================= -->
   <link rel="icon" href="assets/icons/play.svg">
-  <link rel="apple-touch-icon" href="assets/icons/play.svg">
+  <link rel="apple-touch-icon" href="assets/icons/icon-512.png">
 
-  <!-- Huvud-CSS -->
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- =============================================================
+       Huvud-CSS (med versionsquery för cache-busting)
+       ============================================================= -->
+  <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
-  <!-- Wrapper för hela appen -->
+  <!-- Wrapper runt hela applikationen -->
   <div class="wrapper">
 
-    <!-- Header med titel och timer -->
+    <!-- =========================================================
+         Header med titel, timer och progress
+         ========================================================= -->
     <header>
       <h1>VÅRKAMP<sup>5</sup></h1>
-      <!-- Timer-visning -->
       <div id="timer" aria-live="polite">00:00</div>
-      <!-- Progress-visning (uppdateras per vy) -->
       <div id="progress" aria-live="polite"></div>
     </header>
 
-    <!-- Main-området: fylld dynamiskt av script.js -->
+    <!-- =========================================================
+         Main: all dynamisk vy renderas här av script.js
+         ========================================================= -->
     <main id="app" role="main">
-      <!-- Innehållet (startvy, gåtor, statiska sidor, final) renderas här via JavaScript -->
+      <!-- Intro, gåtor, statiska sidor och finalvy hamnar här -->
     </main>
 
-    <!-- Botten-navigering mellan Spela/Vår/Kamp/Hjälp -->
+    <!-- =========================================================
+         Navigationsmeny längst ner (Spela / Vår / Kamp / Hjälp)
+         ========================================================= -->
     <nav class="navbar">
-      <!--
-        Varje knapp har:
-        - en unik ID för att script.js kan binda click-händelser
-        - klassen .nav-btn för gemensam styling
-        - inledningsvis .active på "Spela"
-      -->
-      <button id="nav-play"  class="nav-btn active">
-        <img src="assets/icons/play.svg" alt="Spela-ikon">
+      <button id="nav-play" class="nav-btn active">
+        <img src="assets/icons/play.svg" alt="Spela">
         <span>Spela</span>
       </button>
-      <button id="nav-var"   class="nav-btn disabled">
-        <img src="assets/icons/spring.svg" alt="Vår-ikon">
+      <button id="nav-var" class="nav-btn disabled">
+        <img src="assets/icons/spring.svg" alt="Vår">
         <span>Vår</span>
       </button>
-      <button id="nav-kamp"  class="nav-btn disabled">
-        <img src="assets/icons/fight.svg" alt="Kamp-ikon">
+      <button id="nav-kamp" class="nav-btn disabled">
+        <img src="assets/icons/fight.svg" alt="Kamp">
         <span>Kamp</span>
       </button>
-      <button id="nav-help"  class="nav-btn disabled">
-        <img src="assets/icons/help.svg" alt="Hjälp-ikon">
+      <button id="nav-help" class="nav-btn disabled">
+        <img src="assets/icons/help.svg" alt="Hjälp">
         <span>Hjälp</span>
       </button>
     </nav>
 
-    <!-- Modal för att förstora bilder på "Vår"-fliken -->
+    <!-- =========================================================
+         Modal för bildförstoring på “Vår”-fliken
+         ========================================================= -->
     <div id="img-modal" class="modal hidden">
       <div class="modal-content">
-        <!-- Stäng-knapp -->
-        <button id="modal-close" class="modal-close">&times;</button>
-        <!-- Här sätts src dynamiskt av script.js -->
+        <button id="modal-close" class="modal-close" aria-label="Stäng">&times;</button>
         <img id="modal-img" src="" alt="Förstorad bild">
       </div>
     </div>
 
   </div><!-- /.wrapper -->
 
-  <!-- Ljudeffekter som pre-loadas i JavaScript -->
+  <!-- =============================================================
+       Noscript-varning
+       ============================================================= -->
+  <noscript>
+    <div class="noscript-warning">
+      ⚠️ JavaScript krävs för att sidan ska fungera.
+    </div>
+  </noscript>
+
+  <!-- =============================================================
+       Ljudeffekter (preload)
+       ============================================================= -->
   <audio id="audio-correct" src="assets/audio/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong"   src="assets/audio/wrong.mp3"   preload="auto"></audio>
   <audio id="audio-finish"  src="assets/audio/finish.mp3"  preload="auto"></audio>
 
-  <!-- Huvudskript: all rendering och logik -->
-  <script defer src="js/script.js"></script>
+  <!-- =============================================================
+       Huvudskript (med versionsquery för cache-busting)
+       ============================================================= -->
+  <script defer src="js/script.js?v=4"></script>
 
-  <!-- Service Worker-registrering och update-banner -->
+  <!-- =============================================================
+       Service Worker & update-banner
+       ============================================================= -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
           .then(reg => {
-            // Visa update-banner om det finns en uppdatering väntande
+            // Om det finns en väntande uppdatering, visa banner
             if (reg.waiting) showUpdate(reg);
             reg.addEventListener('updatefound', () => {
               const installing = reg.installing;
@@ -99,17 +122,18 @@
               });
             });
           })
-          .catch(() => { /* ignore errors */ });
+          .catch(() => { /* Ignorera registreringsfel */ });
       });
-      // Ladda om sidan när ny SW tar över
       navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
     }
     function showUpdate(reg) {
       const banner = document.createElement('div');
       banner.className = 'update-banner';
-      banner.innerHTML = `Ny version finns! <button id="upd">Uppdatera</button>`;
+      banner.innerHTML = 'Ny version finns! <button id="upd">Uppdatera</button>';
       document.body.appendChild(banner);
-      banner.querySelector('#upd').onclick = () => reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      banner.querySelector('#upd').addEventListener('click', () => {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      });
     }
   </script>
 </body>
