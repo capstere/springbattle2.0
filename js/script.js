@@ -382,24 +382,33 @@
 
     // Jämför beroende på typ
     switch (p.type) {
-      case 'name':
-        ok = validNames.includes(ans);
-        break;
-      case 'text':
-      case 'number':
-      case 'count':
-        ok = ans === String(p.answer).toLowerCase();
-        break;
-      case 'word':
-        ok = ans.replace(/\s+/g,'') === String(p.answer).toLowerCase();
-        break;
-      case 'stego':
-      case 'audio':
-        ok = ans === String(p.answer);
-        break;
-      case 'morse':
-        ok = /\.{3}-{3}\.{3}/.test(ans);
-        break;
+  case 'name':
+    ok = validNames.includes(ans);
+    break;
+
+  case 'text':
+  case 'number':
+  case 'count':
+    ok = ans === String(p.answer).toLowerCase();
+    break;
+
+  case 'word':
+    ok = ans.replace(/\s+/g,'') === String(p.answer).toLowerCase();
+    break;
+
+  case 'stego':
+  case 'audio':
+    ok = ans === String(p.answer);
+    break;
+
+  case 'morse': {
+    // Normera bort mellanslag och jämför mot alla godkända varianter
+    const cleanedAns = ans.replace(/\s+/g, '').toLowerCase();
+    ok = Array.isArray(p.answers) && p.answers.some(a =>
+      a.replace(/\s+/g, '').toLowerCase() === cleanedAns
+    );
+    break;
+  }
       case 'magic':
         const vals = Array.from(inputEl.querySelectorAll('input'))
                           .map(i => parseInt(i.value, 10));
