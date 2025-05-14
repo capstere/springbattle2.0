@@ -5,6 +5,7 @@ const URLS_TO_CACHE = [
   '/css/styles.css',
   '/js/script.js',
   '/manifest.json',
+  '/assets/data/puzzles.json',
   '/assets/icons/play.svg',
   '/assets/icons/spring.svg',
   '/assets/icons/fight.svg',
@@ -19,20 +20,33 @@ const URLS_TO_CACHE = [
   '/assets/images/arcimboldo-spring.jpg'
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE)));
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(URLS_TO_CACHE))
+  );
   self.skipWaiting();
 });
-self.addEventListener('activate', e => {
-  e.waitUntil(
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => k!==CACHE_NAME).map(k=>caches.delete(k))))
+      .then(keys => Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+      ))
       .then(() => self.clients.claim())
   );
 });
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(rsp => rsp || fetch(e.request))
-      .catch(()=>new Response("Offline", { status:503, headers:{ 'Content-Type':'text/plain' } }))
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+      .catch(() => new Response("Offline", {
+        status: 503,
+        statusText: "Service Unavailable",
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      }))
   );
 });
