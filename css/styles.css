@@ -390,3 +390,44 @@ button:disabled {
     width: 120px;
   }
 }
+
+/* === 17. Magiska kvadraten – snyggare styling === */
+.magic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;                    /* li­te mer mellanrum */
+  margin: 1rem auto;           /* centrera */
+  max-width: 360px;            /* begränsa bredd */
+}
+
+.magic-fixed {
+  background: var(--card-bg);
+  color: var(--fg);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  padding: 0.75rem 0;
+}
+
+.magic-cell {
+  background: var(--btn-bg);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+}
+
+.magic-cell input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--btn-fg);
+  outline: none;
+}
+
+.magic-cell input::placeholder {
+  color: rgba(0,0,0,0.3);
+}
