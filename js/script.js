@@ -306,31 +306,49 @@
         card.append(inputEl);
         break;
 
-      case 'magic':
-        const grid = document.createElement('div');
-        grid.className = 'magic-grid';
-        for (let r = 0; r < p.size; r++) {
-          for (let c = 0; c < p.size; c++) {
-            const v = p.grid[r][c];
-            if (v === "") {
-              const cell = document.createElement('div');
-              cell.className = 'magic-cell';
-              const inp = document.createElement('input');
-              inp.type = 'number';
-              inp.placeholder = '';
-              cell.append(inp);
-              grid.append(cell);
-            } else {
-              const cell = document.createElement('div');
-              cell.className = 'magic-fixed';
-              cell.textContent = v;
-              grid.append(cell);
-            }
-          }
-        }
-        card.append(grid);
-        inputEl = grid;
-        break;
+case 'magic': {
+  // 1) Hämta alla inmatningar i exakt den ordning vi skapade rutorna
+  const inputs = Array.from(inputEl.querySelectorAll('input'));
+  const vals = inputs.map(i => parseInt(i.value, 10));
+
+  // 2) Se till att alla rutor är ifyllda
+  if (vals.some(isNaN)) {
+    showError(msgEl, 'Fyll alla rutor!');
+    return;
+  }
+
+  const sz = p.size;      // t.ex. 4
+  const tgt = p.target;   // t.ex. 34
+  const M = [];           // här bygger vi den fulla 2D-matrisen
+  let idx = 0;
+
+  // 3) Fyll M rad för rad: ersätt tomma strängar med era inputs
+  for (let r = 0; r < sz; r++) {
+    M[r] = [];
+    for (let c = 0; c < sz; c++) {
+      if (p.grid[r][c] === "") {
+        M[r][c] = vals[idx++];
+      } else {
+        M[r][c] = p.grid[r][c];
+      }
+    }
+  }
+
+  // 4) Kolla alla radsummor
+  const rowsOk = M.every(row => row.reduce((a,b) => a+b, 0) === tgt);
+
+  // 5) Kolla alla kolumnsummor
+  const colsOk = Array.from({length: sz}).every(c =>
+    M.reduce((sum, row) => sum + row[c], 0) === tgt
+  );
+
+  // 6) Kolla båda diagonalerna
+  const diag1 = M.reduce((sum, row, r) => sum + row[r], 0) === tgt;
+  const diag2 = M.reduce((sum, row, r) => sum + row[sz-1-r], 0) === tgt;
+
+  ok = rowsOk && colsOk && diag1 && diag2;
+  break;
+}
 
       case 'final':
         return renderFinal();
