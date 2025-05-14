@@ -24,16 +24,23 @@
   // Globalt state + localStorage-nycklar
   // -----------------------------
   let puzzles, staticPages, validNames;
-  let current   = 0;
-  let startTime = 0;
-  let timerId   = null;
+  let current     = 0;
+  let startTime   = 0;
+  let timerId     = null;
   let puzzleAudio = null;
-  let failCount = 0;
-  let started   = false;
+  let failCount   = 0;
+  let started     = false;
 
   const LS_STARTED    = 'varkamp_started';
   const LS_START_TIME = 'varkamp_startTime';
   const LS_CURRENT    = 'varkamp_current';
+
+  // -----------------------------
+  // Utvecklingshjälp: reset via ?reset=1
+  // -----------------------------
+  if (location.search.includes('reset=1')) {
+    localStorage.clear();
+  }
 
   // -----------------------------
   // Hjälpfunktioner
@@ -52,9 +59,12 @@
 
   function play(type) {
     const a = sounds[type];
-    if (a) { a.currentTime = 0; a.play().catch(()=>{}); }
-    if (type==='correct') vibrate(200);
-    if (type==='wrong')   vibrate([100,50,100]);
+    if (a) {
+      a.currentTime = 0;
+      a.play().catch(() => {});
+    }
+    if (type === 'correct') vibrate(200);
+    if (type === 'wrong')   vibrate([100,50,100]);
   }
 
   function showError(el, msg) {
@@ -73,66 +83,61 @@
   }
 
   // -----------------------------
-  // Init: ladda puzzles.json, preload, bind nav, återuppta eller intro
+  // Initiering: ladda data + bind nav + återuppta eller intro
   // -----------------------------
-  
-// Om vi laddar med ?reset=1 i URL: rensa all localStorage innan init
-  if (location.search.includes('reset=1')) {
-  localStorage.clear();
-  }
-
   async function init() {
+    // Läs in gåtor och statiska sidor
     const res  = await fetch('assets/data/puzzles.json');
     const data = await res.json();
     puzzles     = data.puzzles;
     staticPages = data.staticPages;
     validNames  = data.validNames;
 
-    // Preload ljud och stegobild
-    Object.values(sounds).forEach(a=>a.load());
-    const steg = puzzles.find(p=>p.type==='stego');
-    if (steg && steg.img) new Image().src = steg.img;
+    // Preload ljud + stego-bild
+    Object.values(sounds).forEach(a => a.load());
+    const steg = puzzles.find(p => p.type === 'stego');
+    if (steg?.img) new Image().src = steg.img;
 
     // Bind navigeringsknappar
-    Object.keys(navBtns).forEach(key => {
-      navBtns[key].addEventListener('click', ()=>activateTab(key));
+    Object.entries(navBtns).forEach(([key, btn]) => {
+      btn.addEventListener('click', () => activateTab(key));
     });
 
-    // Återuppta om spel redan startat
-    if (localStorage.getItem(LS_STARTED)==='1') {
+    // Återuppta spel om redan startat
+    if (localStorage.getItem(LS_STARTED) === '1') {
       started   = true;
       startTime = parseInt(localStorage.getItem(LS_START_TIME),10) || Date.now();
       current   = parseInt(localStorage.getItem(LS_CURRENT),10)   || 0;
       setNavEnabled(true);
       updateTimer();
-      timerId = setInterval(updateTimer,500);
-      activateTab('play');
+      timerId = setInterval(updateTimer, 500);
       renderPuzzle(current);
     } else {
+      // Visa intro om nytt spel
       setNavEnabled(false);
-      activateTab('play');
+      showIntro();
     }
   }
 
   // -----------------------------
-  // Lås eller lås upp de tre statiska flikarna
+  // Lås/lås upp statiska flikar
   // -----------------------------
-  function setNavEnabled(enable) {
-    ['var','kamp','help'].forEach(k=>{
-      navBtns[k].disabled = !enable;
-      navBtns[k].classList.toggle('disabled', !enable);
+  function setNavEnabled(enabled) {
+    ['var','kamp','help'].forEach(key => {
+      navBtns[key].disabled = !enabled;
+      navBtns[key].classList.toggle('disabled', !enabled);
     });
   }
 
   // -----------------------------
-  // Växla flik
+  // Byt flik
   // -----------------------------
   function activateTab(tab) {
-    Object.values(navBtns).forEach(b=>b.classList.remove('active'));
+    Object.values(navBtns).forEach(b => b.classList.remove('active'));
     navBtns[tab].classList.add('active');
     // Timern fortsätter alltid
 
-    if (tab==='play') {
+    if (tab === 'play') {
       if (!started) showIntro();
       else renderPuzzle(current);
     } else {
@@ -141,60 +146,70 @@
   }
 
   // -----------------------------
-  // Visa startsida / intro
+  // Visa startsida (intro)
   // -----------------------------
   function showIntro() {
     progEl.textContent = '';
     app.innerHTML = `
       <div class="card start-card">
         <img src="assets/icons/icon-512.png" class="start-icon" alt="VÅRKAMP⁵-logo">
-        <p class="prompt">Välkommen till tävlingens första gren!</p>
+        <p class="prompt">Välkommen till tävlingen!</p>
         <button id="startBtn" class="start-btn">Starta tävlingen</button>
       </div>`;
-    document.getElementById('startBtn').addEventListener('click', ()=>{
+    document.getElementById('startBtn').addEventListener('click', () => {
+      // Sätt upp nytt spel
       started = true;
-      localStorage.setItem(LS_STARTED,'1');
+      localStorage.setItem(LS_STARTED, '1');
       startTime = Date.now();
-      localStorage.setItem(LS_START_TIME,String(startTime));
+      localStorage.setItem(LS_START_TIME, String(startTime));
       current = 0;
-      localStorage.setItem(LS_CURRENT,'0');
+      localStorage.setItem(LS_CURRENT, '0');
 
       setNavEnabled(true);
       updateTimer();
-      timerId = setInterval(updateTimer,500);
+      timerId = setInterval(updateTimer, 500);
       renderPuzzle(0);
     });
   }
 
   // -----------------------------
-  // Rendera statisk sida (Vår/Kamp/Hjälp)
+  // Visa statisk flik
   // -----------------------------
   function showStatic(key) {
-    progEl.textContent = staticPages[key].title;
     const d = staticPages[key];
+    progEl.textContent = d.title;
     app.innerHTML = `
       <div class="card">
         <img src="${d.icon}" class="static-icon" alt="${d.title}">
         <h2>${d.title}</h2>
         <p class="static-text">${d.text.replace(/\n/g,'<br>')}</p>
-        ${d.thumb?`<img src="${d.thumb}" id="static-thumb" class="static-thumb">`:''}
+        ${d.thumb ? `<img src="${d.thumb}" id="static-thumb" class="static-thumb" alt="Thumbnail">` : ''}
       </div>`;
-    if (key==='var' && d.thumb) {
-      const thumb = document.getElementById('static-thumb');
-      const modal = document.getElementById('img-modal');
-      const img   = document.getElementById('modal-img');
-      const close = document.getElementById('modal-close');
-      thumb.addEventListener('click', ()=>{
-        img.src = d.full;
-        modal.classList.remove('hidden');
-      });
-      close.addEventListener('click', ()=>{
-        img.src=''; modal.classList.add('hidden');
-      });
-      modal.addEventListener('click', e=>{
-        if (e.target===modal) { img.src=''; modal.classList.add('hidden'); }
-      });
-    }
+    if (key === 'var' && d.thumb) bindModal(d.full);
+  }
+
+  // -----------------------------
+  // Bild-modal för Vår-fliken
+  // -----------------------------
+  function bindModal(fullSrc) {
+    const thumb = document.getElementById('static-thumb');
+    const modal = document.getElementById('img-modal');
+    const img   = document.getElementById('modal-img');
+    const close = document.getElementById('modal-close');
+    thumb.addEventListener('click', () => {
+      img.src = fullSrc;
+      modal.classList.remove('hidden');
+    });
+    close.addEventListener('click', () => {
+      modal.classList.add('hidden');
+      img.src = '';
+    });
+    modal.addEventListener('click', e => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+        img.src = '';
+      }
+    });
   }
 
   // -----------------------------
@@ -205,11 +220,11 @@
     if (!p) return renderFinal();
 
     current = i;
-    localStorage.setItem(LS_CURRENT,String(i));
+    localStorage.setItem(LS_CURRENT, String(i));
     failCount = 0;
     progEl.textContent = `Gåta ${i+1} av ${puzzles.length}`;
     app.innerHTML = '';
-    if (puzzleAudio) { puzzleAudio.pause(); puzzleAudio=null; }
+    puzzleAudio?.pause();
 
     const card = document.createElement('div');
     card.className = 'card';
@@ -220,7 +235,8 @@
 
     let inputEl, msgEl, hintEl;
 
-    switch(p.type) {
+    // Bygg UI efter typ
+    switch (p.type) {
       case 'name':
       case 'text':
         inputEl = document.createElement('input');
@@ -232,7 +248,9 @@
       case 'count':
         if (p.img) {
           const im = document.createElement('img');
-          im.src = p.img; im.alt='Bild'; im.style.width='100%';
+          im.src = p.img;
+          im.alt = '';
+          im.style.width = '100%';
           card.append(im);
         }
         inputEl = document.createElement('input');
@@ -248,9 +266,12 @@
         break;
 
       case 'stego':
+        puzzleAudio = null;
         const si = document.createElement('img');
-        si.src = p.img; si.alt='Stegobild'; si.style.filter='brightness(0)';
-        si.addEventListener('click', ()=> si.style.filter='');
+        si.src = p.img;
+        si.alt = 'Stegobild';
+        si.style.filter = 'brightness(0)';
+        si.addEventListener('click', () => si.style.filter = '');
         card.append(si);
         inputEl = document.createElement('input');
         inputEl.placeholder = p.hint;
@@ -262,8 +283,9 @@
         puzzleAudio.preload = 'auto';
         const ba = document.createElement('button');
         ba.textContent = 'Spela baklänges';
-        ba.addEventListener('click', ()=>{
-          puzzleAudio.currentTime = 0; puzzleAudio.play().catch(()=>{});
+        ba.addEventListener('click', () => {
+          puzzleAudio.currentTime = 0;
+          puzzleAudio.play().catch(() => {});
         });
         card.append(ba);
         inputEl = document.createElement('input');
@@ -272,6 +294,7 @@
         break;
 
       case 'prime':
+        // Vi visar bara input, själva kontrollen i checkAnswer
         inputEl = document.createElement('input');
         inputEl.placeholder = p.hint;
         card.append(inputEl);
@@ -282,8 +305,9 @@
         puzzleAudio.preload = 'auto';
         const bm = document.createElement('button');
         bm.textContent = 'Spela morse';
-        bm.addEventListener('click', ()=>{
-          puzzleAudio.currentTime = 0; puzzleAudio.play().catch(()=>{});
+        bm.addEventListener('click', () => {
+          puzzleAudio.currentTime = 0;
+          puzzleAudio.play().catch(() => {});
         });
         card.append(bm);
         inputEl = document.createElement('input');
@@ -292,25 +316,24 @@
         break;
 
       case 'magic':
+        // Bygg magisk kvadrat
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
-        for (let r=0; r<p.size; r++) {
-          for (let c=0; c<p.size; c++) {
+        for (let r = 0; r < p.size; r++) {
+          for (let c = 0; c < p.size; c++) {
             const v = p.grid[r][c];
+            const cell = document.createElement('div');
             if (v === "") {
-              const cell = document.createElement('div');
               cell.className = 'magic-cell';
               const inp = document.createElement('input');
               inp.type = 'number';
               inp.placeholder = '';
               cell.append(inp);
-              grid.append(cell);
             } else {
-              const cell = document.createElement('div');
               cell.className = 'magic-fixed';
               cell.textContent = v;
-              grid.append(cell);
             }
+            grid.append(cell);
           }
         }
         card.append(grid);
@@ -321,14 +344,18 @@
         return renderFinal();
     }
 
-    msgEl  = document.createElement('div'); msgEl.className='error-msg';
-    hintEl = document.createElement('div'); hintEl.className='hint-msg';
+    // Fel & tips
+    msgEl  = document.createElement('div');
+    msgEl.className = 'error-msg';
+    hintEl = document.createElement('div');
+    hintEl.className = 'hint-msg';
     if (p.hint) hintEl.textContent = `Tips: ${p.hint}`;
     card.append(msgEl, hintEl);
 
+    // Skicka-knapp
     const btn = document.createElement('button');
     btn.textContent = 'Skicka';
-    btn.addEventListener('click', ()=> checkAnswer(p, inputEl, msgEl, hintEl, card));
+    btn.addEventListener('click', () => checkAnswer(p, inputEl, msgEl, hintEl, card));
     card.append(btn);
 
     app.append(card);
@@ -341,20 +368,19 @@
   function checkAnswer(p, inputEl, msgEl, hintEl, card) {
     clearAnim(card);
 
-    // Dynamiskt prime-svar
+    // Prime: rätt om vi är i primtal-minut
     if (p.type === 'prime') {
-      const mins = Math.floor((Date.now() - startTime)/60000);
+      const mins = Math.floor((Date.now() - startTime) / 60000);
       if (!isPrime(mins)) {
         showError(msgEl, '⏳ Vänta till primtal-minut!');
         return;
       }
-      p.answer = String(mins);
     }
 
     const ans = inputEl?.value?.trim().toLowerCase() || '';
     let ok = false;
 
-    switch(p.type) {
+    switch (p.type) {
       case 'name':
         ok = validNames.includes(ans);
         break;
@@ -366,70 +392,75 @@
         break;
 
       case 'word':
-        ok = ans.replace(/\s+/g,'') === String(p.answer).toLowerCase();
+        ok = ans.replace(/\s+/g, '') === String(p.answer).toLowerCase();
         break;
 
       case 'stego':
       case 'audio':
-      case 'prime':
         ok = ans === String(p.answer);
         break;
 
+      case 'prime':
+        ok = true;
+        break;
+
       case 'morse': {
-        const cleaned = ans.replace(/\s+/g,'').toLowerCase();
-        ok = Array.isArray(p.answers) && p.answers.some(a=>
-          a.replace(/\s+/g,'').toLowerCase() === cleaned
+        const cleaned = ans.replace(/\s+/g, '').toLowerCase();
+        ok = Array.isArray(p.answers) && p.answers.some(a =>
+          a.replace(/\s+/g, '').toLowerCase() === cleaned
         );
         break;
       }
 
       case 'magic': {
-        // Läs in alla inputs
+        // Läs in inputs i rätt ordning
         const inputs = Array.from(inputEl.querySelectorAll('input'));
-        const vals   = inputs.map(i=>parseInt(i.value,10));
+        const vals   = inputs.map(i => parseInt(i.value, 10));
         if (vals.some(isNaN)) {
-          showError(msgEl,'Fyll alla rutor!');
+          showError(msgEl, 'Fyll alla rutor!');
           return;
         }
-        // Bygg full matris M
-        const sz  = p.size, tgt = p.target, M = [], row;
-        let idx = 0;
-        for (let r=0; r<sz; r++) {
+        // Bygg full matris
+        const sz  = p.size;
+        const tgt = p.target;
+        const M   = [];
+        let idx   = 0;
+        for (let r = 0; r < sz; r++) {
           M[r] = [];
-          for (let c=0; c<sz; c++) {
-            if (p.grid[r][c]==="") M[r][c] = vals[idx++];
-            else                   M[r][c] = p.grid[r][c];
+          for (let c = 0; c < sz; c++) {
+            M[r][c] = (p.grid[r][c] === "" ? vals[idx++] : p.grid[r][c]);
           }
         }
-        // Kolla rader
-        const rowsOk = M.every(row=> row.reduce((a,b)=>a+b,0)===tgt);
-        // Kolla kolumner
-        const colsOk = Array.from({length:sz}).every(c=>
-          M.reduce((sum,row)=>sum+row[c],0)===tgt
+        // Kontrollera rad-, kol- och diag-summor
+        const rowsOk = M.every(row => row.reduce((a,b)=>a+b,0) === tgt);
+        const colsOk = Array.from({length:sz}).every(c =>
+          M.reduce((sum,row)=>sum+row[c], 0) === tgt
         );
-        // Kolla diagonaler
-        const d1 = M.reduce((s,row,r)=>s+row[r],0)===tgt;
-        const d2 = M.reduce((s,row,r)=>s+row[sz-1-r],0)===tgt;
+        const d1 = M.reduce((s,row,r)=>s+row[r], 0) === tgt;
+        const d2 = M.reduce((s,row,r)=>s+row[sz-1-r], 0) === tgt;
         ok = rowsOk && colsOk && d1 && d2;
         break;
       }
     }
 
+    // Rätt/fel-logik (samma som tidigare)
     if (ok) {
-      play(current+1 < puzzles.length ? 'correct' : 'finish');
+      play(current + 1 < puzzles.length ? 'correct' : 'finish');
       card.classList.add('correct');
-      setTimeout(()=> renderPuzzle(current+1), 500);
+      setTimeout(() => renderPuzzle(current + 1), 500);
     } else {
       play('wrong');
       card.classList.add('shake');
-      showError(msgEl,'❌ Fel – försök igen!');
+      showError(msgEl, '❌ Fel – försök igen!');
       failCount++;
-      if (failCount >= 2 && p.hint) hintEl.textContent = `Tips: ${p.hint}`;
+      if (failCount >= 2 && p.hint) {
+        hintEl.textContent = `Tips: ${p.hint}`;
+      }
     }
   }
 
   // -----------------------------
-  // Final-form och summary
+  // Slut-form & sammanfattning
   // -----------------------------
   function renderFinal() {
     clearInterval(timerId);
@@ -457,7 +488,7 @@
       </div>`;
     app.innerHTML = html;
 
-    // Bind final form
+    // Final form-logik
     const photo   = document.getElementById('photo');
     const latinI  = document.getElementById('latin');
     const teamI   = document.getElementById('team');
@@ -470,36 +501,43 @@
 
     function validate() {
       submit.disabled = !(
-        photo.files.length===1 &&
-        latinI.value.trim()!=='' &&
-        teamI.value.trim()!==''
+        photo.files.length === 1 &&
+        latinI.value.trim() !== '' &&
+        teamI.value.trim() !== ''
       );
     }
-    [photo, latinI, teamI].forEach(el=>el.addEventListener('input', validate));
-    photo.addEventListener('change', ()=>{
+    [photo, latinI, teamI].forEach(el => el.addEventListener('input', validate));
+
+    photo.addEventListener('change', () => {
       validate();
       const f = photo.files[0];
-      if (f && f.size>5*1024*1024) {
-        alert('Max 5 MB.'); photo.value=''; preview.style.display='none'; validate(); return;
+      if (f && f.size > 5*1024*1024) {
+        alert('Max 5 MB.');
+        photo.value     = '';
+        preview.style.display = 'none';
+        validate();
+        return;
       }
       const fr = new FileReader();
-      fr.onload = e=>{
+      fr.onload = e => {
         preview.src = e.target.result;
         preview.style.display = 'block';
       };
       fr.readAsDataURL(f);
     });
-    submit.addEventListener('click', ()=>{
+
+    submit.addEventListener('click', () => {
       const diff = Date.now() - startTime;
-      const mm = String(Math.floor(diff/60000)).padStart(2,'0');
-      const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+      const mm   = String(Math.floor(diff/60000)).padStart(2,'0');
+      const ss   = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
       outTime.textContent = `${mm}:${ss}`;
       outLat.textContent  = latinI.value.trim();
       outTeam.textContent = teamI.value.trim();
+
       const fr = new FileReader();
-      fr.onload = e=>{
+      fr.onload = e => {
         outImg.src = e.target.result;
-        document.getElementById('final-form').style.display='none';
+        document.getElementById('final-form').style.display = 'none';
         document.getElementById('summary').classList.add('visible');
         play('finish');
       };
@@ -507,6 +545,7 @@
     });
   }
 
+  // Starta
   document.addEventListener('DOMContentLoaded', init);
 
 })();
