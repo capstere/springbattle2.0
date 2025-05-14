@@ -75,6 +75,12 @@
   // -----------------------------
   // Init: ladda puzzles.json, preload, bind nav, återuppta eller intro
   // -----------------------------
+  
+// Om vi laddar med ?reset=1 i URL: rensa all localStorage innan init
+  if (location.search.includes('reset=1')) {
+  localStorage.clear();
+  }
+
   async function init() {
     const res  = await fetch('assets/data/puzzles.json');
     const data = await res.json();
