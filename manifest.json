@@ -1,11 +1,10 @@
-// manifest.json
 {
-  "name": "VÅRKAMP⁵",            // Fullt namn för PWA
-  "short_name": "Vårkamp",       // Förkortat namn på hemskärmen
-  "start_url": "./index.html",   // Start-URL när appen öppnas
-  "display": "standalone",       // Kör som egen app utan browser UI
-  "background_color": "#3b682d", // Bakgrundsfärg under laddning
-  "theme_color": "#3b682d",      // Färg för adressfält ect.
+  "name": "VÅRKAMP⁵",
+  "short_name": "Vårkamp",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#3b682d",
+  "theme_color": "#3b682d",
   "icons": [
     {
       "src": "assets/icons/play.svg",
