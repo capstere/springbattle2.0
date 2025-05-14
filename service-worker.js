@@ -1,6 +1,4 @@
-// service-worker.js
-
-const CACHE_NAME = 'varkamp-cache-v1';
+const CACHE_NAME = 'varkamp-cache-v2';
 const URLS_TO_CACHE = [
   '/',                   
   '/index.html',
