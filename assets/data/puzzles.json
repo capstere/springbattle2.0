@@ -1,0 +1,100 @@
+{
+  "puzzles": [
+    {
+      "prompt": "1: Avkoda morse-ljudet",
+      "type": "morse",
+      "src": "assets/audio/sos-morse.mp3",
+      "hint": "Svara med …---…"
+    },
+    {
+      "prompt": "2: Lös den magiska kvadraten",
+      "type": "magic",
+      "grid": [
+        [16, 2, 3, ""],
+        [5, "", "", 8],
+        ["", 7, 6, ""],
+        [4, "", "", 1]
+      ],
+      "size": 4,
+      "target": 34,
+      "hint": "Varje rad, kolumn & diagonal adderar till 34"
+    },
+    {
+      "prompt": "3: Hur många smultron har Arcimboldo målat i La Primavera?",
+      "type": "count",
+      "answer": 2,
+      "hint": "Titta noga på bilden"
+    },
+    {
+      "prompt": "4: Vad heter den aktiva substansen i nässprayer vid kramp?",
+      "type": "text",
+      "answer": "midazolamhydroklorid",
+      "hint": "Ett långt läkemedelsnamn"
+    },
+    {
+      "prompt": "5: Vart ringer du för trovärdig info vid allvarliga händelser?",
+      "type": "number",
+      "answer": "11313",
+      "hint": "Fyra siffror"
+    },
+    {
+      "prompt": "6: Ord-gåta – vilket ord?",
+      "type": "word",
+      "answer": "målgruppen",
+      "hint": "Titta på de tre begreppen"
+    },
+    {
+      "prompt": "7: Vem i laget startar resan?",
+      "type": "name",
+      "answer": "*",
+      "hint": "Skriv ett deltagarnamn från listan"
+    },
+    {
+      "prompt": "8: Bakom mörkret finner du svaret",
+      "type": "stego",
+      "answer": "17",
+      "img": "assets/images/stego.png",
+      "hint": "Prova klicka på bilden"
+    },
+    {
+      "prompt": "9: Vilken sång hör du?",
+      "type": "audio",
+      "answer": "editpir",
+      "src": "assets/audio/p3-chorus-rev.mp3",
+      "hint": "Baklängesmusik"
+    },
+    {
+      "prompt": "10: Tajma svar med primtal",
+      "type": "prime",
+      "hint": "Det är baserat på minuter som gått"
+    },
+    {
+      "prompt": "11: Dokumentera trädet",
+      "type": "final"
+    }
+  ],
+  "staticPages": {
+    "var": {
+      "icon":  "assets/icons/spring.svg",
+      "title": "Vår",
+      "text":  "Våren är en av årets fyra årstider…",
+      "thumb": "assets/images/arcimboldo-spring-thumb.jpg",
+      "full":  "assets/images/arcimboldo-spring.jpg"
+    },
+    "kamp": {
+      "icon":  "assets/icons/fight.svg",
+      "title": "Kamp",
+      "text":  "Kamp är ett substantiv som beskriver…"
+    },
+    "help": {
+      "icon":  "assets/icons/help.svg",
+      "title": "Hjälp",
+      "text":  "Hjälp är ett substantiv som syftar på stöd…"
+    }
+  },
+  "validNames": [
+    "jana","jens","clare","johannes","jakob","nille","jonatan",
+    "jennifer","ville","simon","matias","liza","samer","christina",
+    "oscar","rebecca","philip","hampus","amelia","malin","joel"
+  ]
+}
