@@ -1,32 +1,31 @@
-/* css/styles.css */
+/* ========================================================================
+   styles.css – Hela stilmallen med kommentarer
+   ======================================================================== */
 
-/* =========================
-   Root variables for easy theming
-   ========================= */
+/* === 1. Färgvariabler och grundinställningar === */
 :root {
-  --bg: #3b682d;                   /* Bakgrundsfärg */
-  --fg: #fff;                      /* Textfärg */
-  --card-bg: rgba(255,255,255,0.15); /* Kortbakgrund */
-  --btn-bg: #f1fbc1;               /* Inmatnings- och knappbakgrund */
-  --btn-fg: #000;                  /* Inmatnings- och knapptext */
-  --accent: #ffdd57;               /* Accent/gul färg */
-  --radius: 8px;                   /* Rundade hörn */
-  --shadow: 0 2px 8px rgba(0,0,0,0.2); /* Skugga för kort */
-  --error: #ff4444;                /* Färg för felmeddelanden */
-  --success: #8bc34a;              /* Färg för tipsmeddelanden */
+  --bg: #3b682d;           /* Bakgrundsfärg */
+  --fg: #fff;              /* Textfärg */
+  --card-bg: rgba(255,255,255,0.15); /* Bakgrund färg på kort */
+  --btn-bg: #f1fbc1;       /* Bakgrund för knappar/inmatningar */
+  --btn-fg: #000;          /* Textfärg på knappar/inmatningar */
+  --accent: #ffdd57;       /* Accentfärg (timer, highlights) */
+  --radius: 8px;           /* Rundade hörn */
+  --shadow: 0 2px 8px rgba(0,0,0,0.2); /* Skugga på kort */
+  --error: #ff4444;        /* Färg för fel-text */
+  --success: #8bc34a;      /* Färg för tipstext */
   --font: -apple-system, Roboto, sans-serif; /* Standardfont */
-  --text-shadow: 0 1px 2px rgba(0,0,0,0.7);   /* Lätt textskugga */
+  --text-shadow: 0 1px 2px rgba(0,0,0,0.7);    /* Lätt skugga på text */
 }
 
-/* =========================
-   Global reset and typography
-   ========================= */
+/* === 2. Global reset och box-sizing === */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* === 3. Body och wrapper === */
 body {
   background: var(--bg);
   color: var(--fg);
@@ -37,171 +36,139 @@ body {
   padding: 1rem;
   min-height: 100vh;
 }
-
 .wrapper {
   width: 100%;
   max-width: 480px;
-  padding-bottom: 4rem; /* Ger plats för navbar */
+  /* Ger plats för botten‐navbar */
+  padding-bottom: 4rem;
 }
 
-/* =========================
-   Header (titel + timer + progress)
-   ========================= */
+/* === 4. Header, titel, timer och progress === */
 header {
   text-align: center;
   margin-bottom: 1rem;
 }
-
 header h1 {
   font-size: 1.8rem;
-  text-shadow: var(--text-shadow);
 }
-
 #timer {
-  margin-top: 0.5rem;
+  margin-top: .5rem;
   font-size: 1.25rem;
   background: var(--accent);
   color: var(--bg);
-  padding: 0.25rem 0.75rem;
+  padding: .25rem .75rem;
   border-radius: var(--radius);
   display: inline-block;
   animation: pulse 1.5s infinite;
 }
-
 @keyframes pulse {
   0%   { box-shadow: 0 0 0 0 rgba(255,221,87,0.5); }
   70%  { box-shadow: 0 0 0 10px rgba(255,221,87,0); }
   100% { box-shadow: 0 0 0 0 rgba(255,221,87,0); }
 }
-
 #progress {
-  margin-top: 0.25rem;
+  margin-top: .25rem;
   font-size: 1rem;
-  opacity: 0.8;
 }
 
-/* =========================
-   Cards (gåtor, intro, statisk info, final)
-   ========================= */
+/* === 5. Noscript- och update-banner === */
+.noscript-warning {
+  padding: 1rem;
+  background: #e3342f;
+  color: #fff;
+  text-align: center;
+  border-radius: var(--radius);
+  margin-top: 1rem;
+}
+.update-banner {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg);
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+}
+
+/* === 6. Kort (card) och prompt === */
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1rem;
   margin-bottom: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform .2s, box-shadow .2s;
 }
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
-
 .prompt {
   font-size: 1.3rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: .75rem;
   text-shadow: var(--text-shadow);
 }
 
-/* =========================
-   Startsida (intro‐vy)
-   ========================= */
-
-.start-card {
-  text-align: center;
-}
-
-.start-icon {
-  display: block;
-  margin: 2rem auto;
-  width: 150px;
-  height: auto;
-}
-
-.start-btn {
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 1.2rem;
-  padding: 0.75rem;
-  margin-top: 1.5rem;
-  transition: filter 0.2s;
-}
-
-.start-btn:hover {
-  filter: brightness(0.9);
-}
-
-/* =========================
-   Inputs and buttons
-   ========================= */
-input,
-button {
+/* === 7. Input- och knappstilar === */
+input, button {
   width: 100%;
-  padding: 0.75rem;
+  padding: .75rem;
   font-size: 1.1rem;
-  margin-top: 0.5rem;
+  margin-top: .5rem;
   border: none;
   border-radius: var(--radius);
   background: var(--btn-bg);
   color: var(--btn-fg);
   outline: none;
   min-height: 48px;
-  transition: filter 0.2s, background 0.2s;
 }
-
 input::placeholder {
   color: rgba(0,0,0,0.5);
 }
-
+button:hover {
+  filter: brightness(0.95);
+}
+button:active {
+  opacity: .8;
+  transition: none;
+}
 input:focus-visible,
 button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Hover-effekter på knappar */
-button:hover {
-  filter: brightness(0.9);
-}
-
-/* Active/click feedback */
-button:active {
-  opacity: 0.8;
-}
-
-/* Fel- och tipsmeddelanden */
+/* === 8. Fel- och tipstext === */
 .error-msg {
   color: var(--error);
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  margin-top: .5rem;
+  font-size: .9rem;
 }
-
 .hint-msg {
   color: var(--success);
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  animation: fadein 0.3s;
+  margin-top: .5rem;
+  font-size: .9rem;
+  animation: fadein .3s;
 }
-
 @keyframes fadein {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-/* Visuella effekter vid rätt/fel */
+/* === 9. Visuella feedback-animationsklasser === */
 .card.correct {
-  animation: blink-green 0.5s;
+  animation: blink-green .5s;
 }
-
-@keyframes blink-green {
-  from { background-color: #b5ffbb; }
-  to   { background-color: var(--card-bg); }
-}
-
 .card.shake {
-  animation: shake 0.4s;
+  animation: shake .4s;
 }
-
+@keyframes blink-green {
+  0%   { background-color: #b5ffbb; }
+  100% { background-color: var(--card-bg); }
+}
 @keyframes shake {
   0%   { transform: translateX(0); }
   20%  { transform: translateX(-8px); }
@@ -211,58 +178,56 @@ button:active {
   100% { transform: translateX(0); }
 }
 
-/* =========================
-   Magic grid (magisk kvadrat)
-   ========================= */
+/* === 10. Magic‐grid (magisk kvadrat) === */
 .magic-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  margin-top: 0.5rem;
 }
-
 .magic-cell,
 .magic-fixed {
-  padding: 0.5rem;
+  padding: .5rem;
   text-align: center;
   background: var(--btn-bg);
   border-radius: var(--radius);
 }
-
 .magic-cell {
   width: 100%;
-  transition: border-color 0.2s;
 }
 
-.magic-cell:focus {
-  border: 2px solid var(--accent);
+/* === 11. Startsida (intro-vy) === */
+.start-card {
+  text-align: center;
 }
-
-/* =========================
-   Responsive images (stego, thumbnails)
-   ========================= */
-.card img,
-.static-img {
-  width: 100%;
+.start-icon {
+  display: block;
+  margin: 2rem auto;
+  width: 150px;
   height: auto;
-  border-radius: var(--radius);
-  margin: 0.75rem 0;
+}
+.start-btn {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 1.2rem;
+  padding: .75rem;
+  margin-top: 1.5rem;
+  transition: filter .2s;
+}
+.start-btn:hover {
+  filter: brightness(0.9);
 }
 
-/* =========================
-   Navbar (bottom tabs)
-   ========================= */
+/* === 12. Botten‐navbar === */
 .navbar {
   display: flex;
   justify-content: space-around;
   background: rgba(255,255,255,0.1);
-  padding: 0.5rem 0;
+  padding: .5rem 0;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
 }
-
 .nav-btn {
   background: none;
   border: none;
@@ -271,85 +236,52 @@ button:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 0.7;
-  cursor: pointer;
-  transition: opacity 0.2s;
+  opacity: .7;
 }
-
 .nav-btn.disabled {
-  opacity: 0.3;
+  opacity: .3;      /* Inaktiva flikar */
   pointer-events: none;
 }
-
+.nav-btn.active {
+  opacity: 1;       /* Aktuell flik */
+}
 .nav-btn img {
   width: 24px;
   height: 24px;
-  transition: transform 0.2s, filter 0.2s;
+  margin-bottom: .25rem;
+  /* Ingen transform på active/hover – bara färgbyte */
 }
-
 .nav-btn span {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  color: var(--fg);
-  transition: color 0.2s;
+  font-size: .9rem;
 }
 
-/* Active tab: gul accent på ikon + text */
-.nav-btn.active img {
-  filter: brightness(2);
-}
-
-.nav-btn.active span {
-  color: var(--accent);
-}
-
-/* Hover på inklickbara flikar */
-.nav-btn:not(.disabled):hover img {
-  transform: scale(1.1);
-}
-
-/* Ta bort fokusbakgrund på knapp */
-.nav-btn:focus,
-.nav-btn:active {
-  outline: none;
-  background: none;
-}
-
-/* =========================
-   Static pages (Vår/Kamp/Hjälp)
-   ========================= */
+/* === 13. Statiska sidor (Vår/Kamp/Hjälp) === */
 .static-icon {
   display: block;
   margin: 1rem auto;
   width: 40px;
   height: 40px;
 }
-
 .static-text {
-  margin-top: 0.5rem;
   white-space: pre-wrap;
   line-height: 1.4;
-  text-align: center;
 }
-
-/* Thumbnail på Vår-fliken */
 .static-thumb {
   display: block;
-  margin: 1rem auto; /* centrerat */
+  margin: 1rem auto;
   max-width: 100px;
   cursor: zoom-in;
   border: 2px solid var(--btn-fg);
   border-radius: var(--radius);
-  transition: transform 0.2s;
+}
+.static-img {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100%;
+  border-radius: var(--radius);
 }
 
-.static-thumb:hover {
-  transform: scale(1.05);
-}
-
-/* =========================
-   Modal för bildförstoring
-   ========================= */
+/* === 14. Modal för bildförstoring på Vår-sidan === */
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -359,23 +291,19 @@ button:active {
   align-items: center;
   z-index: 10000;
 }
-
 .modal.hidden {
   display: none;
 }
-
 .modal-content {
   position: relative;
   max-width: 90%;
   max-height: 90%;
 }
-
 .modal-content img {
   width: 100%;
   height: auto;
   border-radius: var(--radius);
 }
-
 .modal-close {
   position: absolute;
   top: -0.5rem;
@@ -384,79 +312,81 @@ button:active {
   border: none;
   font-size: 1.5rem;
   line-height: 1;
-  padding: 0.25rem 0.5rem;
+  padding: .25rem .5rem;
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-.modal-close:hover {
-  background: var(--accent);
-  color: var(--bg);
-}
-
-/* =========================
-   Final form & summary (gåta 11)
-   ========================= */
+/* === 15. Form & summary för sista gåtan === */
 #final-form fieldset {
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: var(--radius);
   padding: 1rem;
 }
-
 #final-form legend {
-  padding: 0 0.5rem;
+  padding: 0 .5rem;
   font-weight: bold;
 }
-
 #final-form label {
   display: block;
   margin-top: 1rem;
 }
-
+#final-form input[type="file"] {
+  padding: .5rem 0;
+  background: none;
+  color: var(--fg);
+  font-size: .9rem;
+}
+#final-form input[type="file"]::file-selector-button {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+#final-form input[type="file"]::file-selector-button:hover {
+  filter: brightness(0.95);
+}
 #preview {
   display: none;
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: .5rem;
   border-radius: var(--radius);
 }
-
 button:disabled {
-  opacity: 0.5;
+  opacity: .5;
   cursor: not-allowed;
 }
-
 .summary {
   opacity: 0;
   visibility: hidden;
   transform: translateY(20px);
-  transition: all 0.5s ease;
+  transition: all .5s ease;
 }
-
 .summary.visible {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
-
 .summary img {
   width: 100%;
   border-radius: var(--radius);
   margin-bottom: 1rem;
 }
-
 .field {
-  margin-bottom: 0.75rem;
+  margin-bottom: .75rem;
 }
 
-/* =========================
-   Media queries för mobil
-   ========================= */
+/* === 16. Responsiv justering för mindre enheter === */
 @media (max-width: 400px) {
   header h1 {
     font-size: 1.5rem;
   }
   .prompt {
     font-size: 1.2rem;
+  }
+  .start-icon {
+    width: 120px;
   }
 }
