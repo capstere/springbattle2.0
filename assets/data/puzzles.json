@@ -31,10 +31,10 @@
       "src": "assets/audio/sos-morse.mp3",
       "hint": "Svara med …---… eller varianter",
       "answers": [
-        "...---...",        // tre punkter, tre streck, tre punkter
-        "... --- ...",      // med mellanslag
-        ". . . - - - . . .",// punkter/streck som individuella tecken
-        "...___..."         // tre understreck som alternativ
+        "...---...",
+        "... --- ...",
+        ". . . - - - . . .",
+        "...___..."
       ]
     },
     {
