@@ -44,7 +44,7 @@
 
   <script defer src="js/script.js"></script>
   <script>
-    // Service Worker + update-banner
+    // Service Worker + uppdaterings-banner
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
@@ -53,13 +53,13 @@
             reg.addEventListener('updatefound', () => {
               const ins = reg.installing;
               ins.addEventListener('statechange', () => {
-                if (ins.state==='installed' && navigator.serviceWorker.controller) {
+                if (ins.state === 'installed' && navigator.serviceWorker.controller) {
                   showUpdate(reg);
                 }
               });
             });
           })
-          .catch(()=>{});
+          .catch(() => {});
       });
       navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
     }
@@ -68,7 +68,7 @@
       banner.className = 'update-banner';
       banner.innerHTML = `Ny version finns! <button id="upd">Uppdatera</button>`;
       document.body.appendChild(banner);
-      banner.querySelector('#upd').onclick = () => reg.waiting.postMessage({type:'SKIP_WAITING'});
+      banner.querySelector('#upd').onclick = () => reg.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
   </script>
 </body>
