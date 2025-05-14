@@ -1,3 +1,4 @@
+// manifest.json
 {
   "name": "VÅRKAMP⁵",
   "short_name": "Vårkamp",
@@ -12,9 +13,9 @@
       "type": "image/svg+xml"
     },
     {
-      "src": "assets/icons/play.svg",
+      "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }
