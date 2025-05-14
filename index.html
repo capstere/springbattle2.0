@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>VÅRKAMP⁵</title>
+  <meta name="theme-color" content="#3b682d">
+  <meta name="description" content="Ett interaktivt 5-delat utomhuspussel med ljud, stego, kryptologi och dokumentation.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/play.svg">
+  <link rel="apple-touch-icon" href="assets/icons/play.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>VÅRKAMP<sup>5</sup></h1>
+      <div id="timer" aria-live="polite">00:00</div>
+      <div id="progress" aria-live="polite"></div>
+    </header>
+    <main id="app" role="main"></main>
+
+    <!-- Botten-navigering -->
+    <nav class="navbar">
+      <button id="nav-play"  class="nav-btn active"><img src="assets/icons/play.svg" alt=""><span>Spela</span></button>
+      <button id="nav-var"   class="nav-btn"><img src="assets/icons/spring.svg" alt=""><span>Vår</span></button>
+      <button id="nav-kamp"  class="nav-btn"><img src="assets/icons/fight.svg" alt=""><span>Kamp</span></button>
+      <button id="nav-help"  class="nav-btn"><img src="assets/icons/help.svg" alt=""><span>Hjälp</span></button>
+    </nav>
+
+    <!-- Modal för bildförstoring -->
+    <div id="img-modal" class="modal hidden">
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close">&times;</button>
+        <img id="modal-img" src="" alt="Förstorad bild">
+      </div>
+    </div>
+  </div>
+
+  <!-- Ljudeffekter -->
+  <audio id="audio-correct" src="assets/audio/correct.mp3" preload="auto"></audio>
+  <audio id="audio-wrong"   src="assets/audio/wrong.mp3"   preload="auto"></audio>
+  <audio id="audio-finish"  src="assets/audio/finish.mp3"  preload="auto"></audio>
+
+  <script defer src="js/script.js"></script>
+  <script>
+    // Service Worker + update-banner
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => {
+            if (reg.waiting) showUpdate(reg);
+            reg.addEventListener('updatefound', () => {
+              const ins = reg.installing;
+              ins.addEventListener('statechange', () => {
+                if (ins.state==='installed' && navigator.serviceWorker.controller) {
+                  showUpdate(reg);
+                }
+              });
+            });
+          })
+          .catch(()=>{});
+      });
+      navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+    }
+    function showUpdate(reg) {
+      const banner = document.createElement('div');
+      banner.className = 'update-banner';
+      banner.innerHTML = `Ny version finns! <button id="upd">Uppdatera</button>`;
+      document.body.appendChild(banner);
+      banner.querySelector('#upd').onclick = () => reg.waiting.postMessage({type:'SKIP_WAITING'});
+    }
+  </script>
+</body>
+</html>
