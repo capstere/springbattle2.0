@@ -130,22 +130,27 @@
   // Visar startsidan med icon-512 och Starta-knapp
   // -----------------------------
   function showIntro() {
-    progEl.textContent = '';
-    app.innerHTML = `
-      <div class="card">
-        <img src="assets/images/icon-512.png" class="start-icon" alt="VÅRKAMP⁵">
-        <p class="prompt">Välkommen till tävlingsgren 5!</p>
-        <button id="startBtn">Starta tävlingen</button>
-      </div>`;
-    document.getElementById('startBtn').addEventListener('click', () => {
-      started = true;
-      setNavEnabled(true);
-      startTime = Date.now();
-      updateTimer();
-      timerId = setInterval(updateTimer, 500);
-      renderPuzzle(0);
-    });
-  }
+  // Sätta progress till tomt
+  progEl.textContent = '';
+
+  // Visa startsidan med icon-512.png och knapp
+  app.innerHTML = `
+    <div class="card start-card">
+      <img src="assets/icons/icon-512.png" class="start-icon" alt="VÅRKAMP⁵-logo">
+      <p class="prompt">Välkommen till tävlingsgren 5!</p>
+      <button id="startBtn" class="start-btn">Starta tävlingen</button>
+    </div>`;
+
+  // Initiera startknapp
+  document.getElementById('startBtn').addEventListener('click', () => {
+    started    = true;
+    setNavEnabled(true);          // Lås upp övriga flikar
+    startTime  = Date.now();      // Börja timern
+    updateTimer();
+    timerId    = setInterval(updateTimer, 500);
+    renderPuzzle(0);
+  });
+}
 
   // -----------------------------
   // Visa statisk sida (Vår/Kamp/Hjälp)
