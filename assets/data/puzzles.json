@@ -4,35 +4,35 @@
       "prompt": "1: Vem i laget startar resan?",
       "type": "name",
       "answer": "*",
-      "hint": "Skriv ett deltagarnamn från listan"
+      "hint": "Skriv inte något du ångrar"
     },
     {
-      "prompt": "2: Bakom mörkret finner du svaret",
+      "prompt": "2: Vad döljer sig i bilden?",
       "type": "stego",
       "answer": "17",
       "img": "assets/images/stego.png",
-      "hint": "Prova klicka på bilden"
+      "hint": "Andas och ta ett steg tillbaka"
     },
     {
       "prompt": "3: Vilken sång hör du?",
       "type": "audio",
       "answer": "editpir",
       "src": "assets/audio/p3-chorus-rev.mp3",
-      "hint": "Baklängesmusik"
+      "hint": "Slutet är början"
     },
     {
-      "prompt": "4: Tajma svar med primtal",
+      "prompt": "4: Vilket är primtalet?",
       "type": "prime",
-      "hint": "Det är baserat på minuter som gått"
+      "hint": "Ni har 17 chanser första timmen"
     },
     {
       "prompt": "5: Avkoda morse-ljudet",
       "type": "morse",
       "src": "assets/audio/sos-morse.mp3",
-      "hint": "Svara med …---… eller varianter",
+      "hint": "Använd mellanslag",
       "answers": [
         "...---...",
-        "... --- ...",
+        "...- - -...",
         ". . . - - - . . .",
         "...___..."
       ]
@@ -48,31 +48,31 @@
       ],
       "size": 4,
       "target": 34,
-      "hint": "Varje rad, kolumn & diagonal adderar till 34"
+      "hint": "Spegelparen runt mittpunkten möts alltid i 17"
     },
     {
       "prompt": "7: Hur många smultron har Arcimboldo målat i La Primavera?",
       "type": "count",
       "answer": 2,
-      "hint": "Titta noga på bilden"
+      "hint": "Nu är siffran 17 obetydlig"
     },
     {
       "prompt": "8: Vad heter den aktiva substansen i nässprayer vid kramp?",
       "type": "text",
       "answer": "midazolamhydroklorid",
-      "hint": "Ett långt läkemedelsnamn"
+      "hint": "Copy + Paste"
     },
     {
-      "prompt": "9: Vart ringer du för trovärdig info vid allvarliga händelser?",
+      "prompt": "9: Vart ringer du för trovärdig info?",
       "type": "number",
       "answer": "11313",
       "hint": "Fyra siffror"
     },
     {
-      "prompt": "10: Ett ord finns mellan vinter och sommar, kraftmätning och ledtråd. Vilket ord?",
+      "prompt": "10: Vilket ord framträder ur vinter och sommar, strid och räddning?",
       "type": "word",
       "answer": "målgruppen",
-      "hint": "Se de tre begreppen"
+      "hint": "Korpulent skrift på vift"
     },
     {
       "prompt": "11: Dokumentera trädet",
