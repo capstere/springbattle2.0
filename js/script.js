@@ -21,16 +21,16 @@
   };
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 2) GLOBALT STATE + localStorage‐nycklar
+  // 2) GLOBALT STATE + localStorage-nycklar
   // ────────────────────────────────────────────────────────────────────────────
   let puzzles, staticPages, validNames;
-  let current     = 0;
-  let startTime   = 0;
-  let finishTime  = 0;      // sparar sluttiden
-  let timerId     = null;
-  let puzzleAudio = null;
-  let failCount   = 0;
-  let started     = false;
+  let current    = 0;
+  let startTime  = 0;
+  let finishTime = 0;    // sparar sluttiden
+  let timerId    = null;
+  let puzzleAudio= null;
+  let failCount  = 0;
+  let started    = false;
 
   const LS_STARTED    = 'varkamp_started';
   const LS_START_TIME = 'varkamp_startTime';
@@ -41,9 +41,7 @@
   // ────────────────────────────────────────────────────────────────────────────
   function isPrime(n) {
     if (n < 2) return false;
-    for (let i = 2; i * i <= n; i++) {
-      if (n % i === 0) return false;
-    }
+    for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
     return true;
   }
   function vibrate(pattern) {
@@ -81,19 +79,19 @@
     const steg = puzzles.find(p=>p.type==='stego');
     if (steg?.img) new Image().src = steg.img;
 
-    // binda nav-knappar
+    // bind nav-knappar
     Object.entries(navBtns).forEach(([k,btn])=>{
       btn.addEventListener('click', ()=>activateTab(k));
     });
 
     // återuppta om redan startat
-    if (localStorage.getItem(LS_STARTED)==='1') {
+    if (localStorage.getItem(LS_STARTED) === '1') {
       started   = true;
       startTime = parseInt(localStorage.getItem(LS_START_TIME),10) || Date.now();
       current   = parseInt(localStorage.getItem(LS_CURRENT),10)   || 0;
       setNavEnabled(true);
       updateTimer();
-      timerId = setInterval(updateTimer,500);
+      timerId = setInterval(updateTimer, 500);
     } else {
       setNavEnabled(false);
     }
@@ -107,9 +105,9 @@
   // ────────────────────────────────────────────────────────────────────────────
   function setNavEnabled(on) {
     ['var','kamp','help'].forEach(k=>{
-      const b = navBtns[k];
-      b.disabled = !on;
-      b.classList.toggle('disabled', !on);
+      const btn = navBtns[k];
+      btn.disabled = !on;
+      btn.classList.toggle('disabled', !on);
     });
   }
 
@@ -120,7 +118,7 @@
     Object.values(navBtns).forEach(b=>b.classList.remove('active'));
     navBtns[tab].classList.add('active');
 
-    if (tab==='play') {
+    if (tab === 'play') {
       if (!started) showIntro();
       else          renderPuzzle(current);
     } else {
@@ -129,7 +127,7 @@
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 7) INTRO‐VY
+  // 7) INTRO-VY
   // ────────────────────────────────────────────────────────────────────────────
   function showIntro() {
     clearInterval(timerId);
@@ -140,8 +138,8 @@
 
     app.innerHTML = `
       <div class="card start-card">
-        <img src="assets/icons/icon-512.png" class="start-icon" alt="VÅRKAMP⁵-logo">
-        <p class="prompt">Välkommen till tävlingens första gren!</p>
+        <img src="assets/icons/icon-512.png" class="start-icon" alt="Logo">
+        <p class="prompt">Välkommen till tävlingen!</p>
         <button id="startBtn" class="start-btn">Starta tävlingen</button>
       </div>`;
 
@@ -154,13 +152,13 @@
       localStorage.setItem(LS_CURRENT,    '0');
       setNavEnabled(true);
       updateTimer();
-      timerId = setInterval(updateTimer,500);
+      timerId = setInterval(updateTimer, 500);
       renderPuzzle(0);
     });
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 8) STATISKA SIDOR (Vår/Kamp/Hjälp)
+  // 8) STATISKA Sidor (Vår/Kamp/Hjälp)
   // ────────────────────────────────────────────────────────────────────────────
   function showStatic(key) {
     progEl.textContent = staticPages[key].title;
@@ -172,7 +170,6 @@
         <p class="static-text">${d.text.replace(/\n/g,'<br>')}</p>
         ${d.thumb?`<img id="static-thumb" src="${d.thumb}" class="static-thumb">`:''}
       </div>`;
-
     if (key==='var' && d.thumb) {
       const thumb = document.getElementById('static-thumb');
       const modal = document.getElementById('img-modal');
@@ -183,10 +180,12 @@
         modal.classList.remove('hidden');
       });
       close.addEventListener('click', ()=>{
-        img.src = ''; modal.classList.add('hidden');
+        img.src=''; modal.classList.add('hidden');
       });
       modal.addEventListener('click', e=>{
-        if(e.target===modal) { img.src=''; modal.classList.add('hidden'); }
+        if (e.target===modal) {
+          img.src=''; modal.classList.add('hidden');
+        }
       });
     }
   }
@@ -198,111 +197,113 @@
     const p = puzzles[i];
     if (!p) return renderFinal();
 
+    // ** Viktigt: rensa alltid gamla vyer! **
+    app.innerHTML = '';
+
     current = i;
-    localStorage.setItem(LS_CURRENT,String(i));
+    localStorage.setItem(LS_CURRENT, String(i));
     failCount = 0;
 
-    // ta bort all tidigare progress‐text
+    // (Vi visar ingen “Gåta x av y” längre)
     progEl.textContent = '';
 
     // starta timer om den inte redan tickar
     if (!timerId) {
       updateTimer();
-      timerId = setInterval(updateTimer,500);
+      timerId = setInterval(updateTimer, 500);
     }
 
-    // stoppa ev ljud
+    // stoppa tidigare ljud om det finns
     if (puzzleAudio) {
       puzzleAudio.pause();
       puzzleAudio = null;
     }
 
-    // bygg kort
+    // bygg kort-elementet
     const card = document.createElement('div');
     card.className = 'card';
-    const prm = document.createElement('div');
+    const prm  = document.createElement('div');
     prm.className = 'prompt';
     prm.textContent = p.prompt;
     card.append(prm);
 
     let inputEl, msgEl, hintEl;
 
-    switch(p.type) {
+    switch (p.type) {
       case 'name':
       case 'text':
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'number':
       case 'count':
-        if (p.img) {
-          const im = createImg(p.img);
-          card.append(im);
-        }
-        inputEl = createInput('number',p.hint);
+        if (p.img) card.append(createImg(p.img));
+        inputEl = createInput('number', p.hint);
         card.append(inputEl);
         break;
 
       case 'word':
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'stego':
-        puzzleAudio = null;
         const si = createImg(p.img);
         si.classList.add('stego-img');
         si.style.filter = 'brightness(0)';
-        si.addEventListener('click', ()=>si.style.filter='');
+        si.addEventListener('click', ()=> si.style.filter = '');
         card.append(si);
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'audio':
-        puzzleAudio = new Audio(p.src); puzzleAudio.preload='auto';
+        puzzleAudio = new Audio(p.src);
+        puzzleAudio.preload = 'auto';
         const ba = document.createElement('button');
         ba.textContent = 'Spela baklänges';
         ba.addEventListener('click', ()=>{
-          puzzleAudio.currentTime=0;
+          puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
         });
         card.append(ba);
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'prime':
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'morse':
-        puzzleAudio = new Audio(p.src); puzzleAudio.preload='auto';
+        puzzleAudio = new Audio(p.src);
+        puzzleAudio.preload = 'auto';
         const bm = document.createElement('button');
         bm.textContent = 'Spela morse';
         bm.addEventListener('click', ()=>{
-          puzzleAudio.currentTime=0;
+          puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
         });
         card.append(bm);
-        inputEl = createInput('text',p.hint);
+        inputEl = createInput('text', p.hint);
         card.append(inputEl);
         break;
 
       case 'magic':
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
-        for (let r=0; r<p.size; r++){
-          for (let c=0; c<p.size; c++){
+        for (let r=0; r<p.size; r++) {
+          for (let c=0; c<p.size; c++) {
             const cell = document.createElement('div');
             if (p.grid[r][c]==="") {
-              cell.className='magic-cell';
-              const inp = document.createElement('input'); inp.type='number';
+              cell.className = 'magic-cell';
+              const inp = document.createElement('input');
+              inp.type = 'number';
               cell.append(inp);
             } else {
-              cell.className='magic-fixed';
+              cell.className = 'magic-fixed';
               cell.textContent = p.grid[r][c];
             }
             grid.append(cell);
@@ -316,46 +317,52 @@
         return renderFinal();
     }
 
-    // fel + hint (alltid synlig)
-    msgEl  = document.createElement('div'); msgEl.className='error-msg';
-    hintEl = document.createElement('div'); hintEl.className='hint-msg';
+    // Fel- och alltid synligt hint-element
+    msgEl  = document.createElement('div'); msgEl.className  = 'error-msg';
+    hintEl = document.createElement('div'); hintEl.className = 'hint-msg';
     if (p.hint) hintEl.textContent = `Tips: ${p.hint}`;
     card.append(msgEl, hintEl);
 
-    // skicka‐knapp
+    // Skicka-knapp
     const btn = document.createElement('button');
     btn.textContent = 'Skicka';
-    btn.addEventListener('click', ()=>checkAnswer(p,inputEl,msgEl,hintEl,card));
+    btn.addEventListener('click', ()=> checkAnswer(p, inputEl, msgEl, hintEl, card));
     card.append(btn);
 
     app.append(card);
     inputEl?.focus();
   }
 
-  function createInput(type,ph) {
+  function createInput(type, ph) {
     const i = document.createElement('input');
     i.type = type; i.placeholder = ph;
     return i;
   }
   function createImg(src) {
     const im = document.createElement('img');
-    im.src = src; im.alt = ''; return im;
+    im.src = src; im.alt = '';
+    return im;
   }
 
   // ────────────────────────────────────────────────────────────────────────────
   // 10) KONTROLLERA SVAR
   // ────────────────────────────────────────────────────────────────────────────
-  function checkAnswer(p,inputEl,msgEl,hintEl,card) {
+  function checkAnswer(p, inputEl, msgEl, hintEl, card) {
     clearAnim(card);
     clearError(msgEl);
 
-    if (puzzleAudio) { puzzleAudio.pause(); puzzleAudio = null; }
+    // Stoppa ev. ljud
+    if (puzzleAudio) {
+      puzzleAudio.pause();
+      puzzleAudio = null;
+    }
 
-    // dynamiskt primtal‐svar
-    if (p.type==='prime') {
-      const mins = Math.floor((Date.now()-startTime)/60000);
+    // Dynamiskt primtal-svar
+    if (p.type === 'prime') {
+      const mins = Math.floor((Date.now() - startTime)/60000);
       if (!isPrime(mins)) {
-        showError(msgEl,'⏳ Vänta till primtal‐minut!'); return;
+        showError(msgEl,'⏳ Vänta till primtal-minut!');
+        return;
       }
       p.answer = String(mins);
     }
@@ -363,30 +370,36 @@
     const ans = (inputEl.value||'').trim().toLowerCase();
     let ok = false;
 
-    switch(p.type) {
-      case 'name':   ok = validNames.includes(ans); break;
+    switch (p.type) {
+      case 'name': ok = validNames.includes(ans); break;
       case 'text':
       case 'number':
-      case 'count':  ok = ans===String(p.answer).toLowerCase(); break;
-      case 'word':   ok = ans.replace(/\s+/g,'')===String(p.answer).toLowerCase(); break;
+      case 'count':
+        ok = ans === String(p.answer).toLowerCase();
+        break;
+      case 'word':
+        ok = ans.replace(/\s+/g,'') === String(p.answer).toLowerCase();
+        break;
       case 'stego':
       case 'audio':
-      case 'prime':  ok = ans===String(p.answer); break;
+      case 'prime':
+        ok = ans === String(p.answer);
+        break;
       case 'morse': {
         const clean = ans.replace(/\s+/g,'');
-        ok = Array.isArray(p.answers) && p.answers.some(a=>
-          a.replace(/\s+/g,'').toLowerCase()===clean
-        );
+        ok = Array.isArray(p.answers) &&
+             p.answers.some(a=>a.replace(/\s+/g,'').toLowerCase()===clean);
         break;
       }
       case 'magic': {
-        const vals = Array.from(inputEl.querySelectorAll('input')).map(i=>parseInt(i.value,10));
+        const vals = Array.from(inputEl.querySelectorAll('input'))
+                          .map(i=>parseInt(i.value,10));
         if (vals.some(isNaN)) { showError(msgEl,'Fyll alla rutor!'); return; }
         const sz  = p.size, tgt = p.target, M = [], A = p.grid;
         let idx = 0;
-        for (let r=0; r<sz; r++){
+        for (let r=0;r<sz;r++){
           M[r]=[];
-          for (let c=0; c<sz; c++){
+          for (let c=0;c<sz;c++){
             M[r][c] = (A[r][c]==="")? vals[idx++] : Number(A[r][c]);
           }
         }
@@ -402,9 +415,14 @@
     }
 
     if (ok) {
-      playSound(current+1<puzzles.length?'correct':'finish');
+      playSound(current+1 < puzzles.length ? 'correct' : 'finish');
       card.classList.add('correct');
-      setTimeout(()=> renderPuzzle(current+1),500);
+      // Om det är sista, sätt finishTime här:
+      if (p.type === 'magic' && current+1 === puzzles.length-1) {
+        // sista gåtan innan final
+        finishTime = Date.now();
+      }
+      setTimeout(()=> renderPuzzle(current+1), 500);
     } else {
       playSound('wrong');
       card.classList.add('shake');
@@ -419,12 +437,14 @@
     // stoppa timer
     clearInterval(timerId);
     timerId = null;
-    finishTime = Date.now();
+    // om finishTime inte fångats tidigare (t.ex. magic saknas), fånga nu
+    if (!finishTime) finishTime = Date.now();
     playSound('finish');
 
     setNavEnabled(false);
     Object.values(navBtns).forEach(b=>b.classList.remove('active'));
 
+    // rendera final-form + summary
     app.innerHTML = `
       <div class="card" id="final-form">
         <fieldset>
@@ -444,11 +464,12 @@
         <div class="field"><strong>Latinskt namn:</strong> <span id="out-latin"></span></div>
         <div class="field"><strong>Lagnamn:</strong> <span id="out-team"></span></div>
         <div class="field"><strong>Tid:</strong> <span id="out-time"></span></div>
-        <div class="field"><strong>Bild:</strong><br><img id="out-image" style="width:100%;border-radius:8px;"></div>
+        <div class="field"><strong>Bild:</strong><br>
+          <img id="out-image" style="width:100%;border-radius:8px;"></div>
         <p>📸 Ta en skärmdump och skicka till domaren.</p>
       </div>`;
 
-    // bind final-form
+    // bind final-form som tidigare...
     const photo   = document.getElementById('photo');
     const latinI  = document.getElementById('latin');
     const teamI   = document.getElementById('team');
@@ -471,25 +492,21 @@
     photo.addEventListener('change',()=>{
       validate();
       const f = photo.files[0];
-      if(f && f.size>5*1024*1024){
-        alert('Max 5 MB'); photo.value=''; preview.style.display='none'; validate(); return;
-      }
-      const fr=new FileReader();
-      fr.onload=e=>{ preview.src=e.target.result; preview.style.display='block'; };
+      if (f && f.size>5*1024*1024) { alert('Max 5 MB'); photo.value=''; preview.style.display='none'; validate(); return; }
+      const fr = new FileReader();
+      fr.onload = e=>{ preview.src=e.target.result; preview.style.display='block'; };
       fr.readAsDataURL(f);
     });
 
     submit.addEventListener('click', ()=>{
-      // beräkna med fångad sluttid
       const diff = finishTime - startTime;
       const mm   = String(Math.floor(diff/60000)).padStart(2,'0');
       const ss   = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
       outTime.textContent = `${mm}:${ss}`;
       outLat.textContent  = latinI.value.trim();
       outTeam.textContent = teamI.value.trim();
-
       const fr2 = new FileReader();
-      fr2.onload=e2=>{
+      fr2.onload = e2=>{
         outImg.src = e2.target.result;
         document.getElementById('final-form').style.display='none';
         document.getElementById('summary').classList.add('visible');
