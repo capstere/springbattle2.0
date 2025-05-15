@@ -177,10 +177,11 @@
         break;
       case 'stego':
         const si = createImg(p.img);
-        si.style.filter='brightness(0)';
-        si.onclick = ()=>si.style.filter='';
+        si.classList.add('stego-img');
+        si.style.filter = 'brightness(0)';
+        si.onclick = () => si.style.filter = '';
         card.append(si);
-        inputEl = createInput('text','Skriv talet');
+        inputEl = createInput('text', 'Skriv talet');
         card.append(inputEl);
         break;
       case 'audio':
