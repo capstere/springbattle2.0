@@ -25,7 +25,7 @@
   let timerId = null;
   let failCount = 0;
   let started = false;
-  let finalElapsed = 0;               // Captured elapsed ms at submission
+  let finalElapsed = 0;
 
   const LS_STARTED    = 'varkamp_started';
   const LS_START_TIME = 'varkamp_startTime';
@@ -44,7 +44,7 @@
   }
   function play(type) {
     const a = sounds[type];
-    if (a) { a.currentTime = 0; a.play().catch(()=>{}); }
+    if (a) { a.currentTime = 0; a.play().catch(() => {}); }
     if (type === 'correct') vibrate(200);
     if (type === 'wrong')   vibrate([100,50,100]);
   }
@@ -52,7 +52,7 @@
     el.textContent = msg;
   }
   function clearAnim(card) {
-    card.classList.remove('correct','shake');
+    card.classList.remove('correct', 'shake');
   }
   function updateTimer() {
     const diff = Date.now() - startTime;
@@ -61,28 +61,32 @@
     timerEl.textContent = `${mm}:${ss}`;
   }
 
-  // === Initialization ===
+  // === Enable/disable static tabs ===
+  function setNavEnabled(on) {
+    ['var','kamp','help'].forEach(k => {
+      navBtns[k].disabled = !on;
+      navBtns[k].classList.toggle('disabled', !on);
+    });
+  }
+
+  // === Init ===
   async function init() {
-    // Load data
     const res = await fetch('assets/data/puzzles.json');
     const data = await res.json();
     puzzles     = data.puzzles;
     staticPages = data.staticPages;
     validNames  = data.validNames;
 
-    // Preload sounds & stego image
-    Object.values(sounds).forEach(a=>a.load());
-    const steg = puzzles.find(p=>p.type==='stego');
+    Object.values(sounds).forEach(a => a.load());
+    const steg = puzzles.find(p => p.type === 'stego');
     if (steg?.img) new Image().src = steg.img;
 
-    // Bind nav buttons
-    for (let key in navBtns) {
+    Object.keys(navBtns).forEach(key => {
       navBtns[key].addEventListener('click', () => activateTab(key));
-    }
+    });
 
-    // Resume if already started
     if (localStorage.getItem(LS_STARTED) === '1') {
-      started = true;
+      started   = true;
       startTime = parseInt(localStorage.getItem(LS_START_TIME),10) || Date.now();
       current   = parseInt(localStorage.getItem(LS_CURRENT),10)   || 0;
       setNavEnabled(true);
@@ -96,19 +100,10 @@
     }
   }
 
-  // === Enable/disable static tabs ===
-  function setNavEnabled(on) {
-    ['var','kamp','help'].forEach(k => {
-      navBtns[k].disabled = !on;
-      navBtns[k].classList.toggle('disabled', !on);
-    });
-  }
-
   // === Tab switching ===
   function activateTab(tab) {
-    Object.values(navBtns).forEach(b=>b.classList.remove('active'));
+    Object.values(navBtns).forEach(b => b.classList.remove('active'));
     navBtns[tab].classList.add('active');
-    // Timer keeps running always until final submission
 
     if (tab === 'play') {
       if (!started) showIntro();
@@ -118,7 +113,7 @@
     }
   }
 
-  // === Intro/start page ===
+  // === Show Intro ===
   function showIntro() {
     progEl.textContent = '';
     app.innerHTML = `
@@ -133,7 +128,7 @@
       startTime = Date.now();
       localStorage.setItem(LS_START_TIME, String(startTime));
       current = 0;
-      localStorage.setItem(LS_CURRENT,'0');
+      localStorage.setItem(LS_CURRENT, '0');
       setNavEnabled(true);
       updateTimer();
       timerId = setInterval(updateTimer,500);
@@ -141,7 +136,7 @@
     });
   }
 
-  // === Static pages (Vår/Kamp/Hjälp) ===
+  // === Show Static Page ===
   function showStatic(key) {
     const d = staticPages[key];
     progEl.textContent = d.title;
@@ -152,29 +147,32 @@
         <p class="static-text">${d.text.replace(/\n/g,'<br>')}</p>
         ${d.thumb?`<img src="${d.thumb}" id="static-thumb" class="static-thumb">`:''}
       </div>`;
-    // Modal for thumb on "var"
-    if (key==='var' && d.thumb) {
+    if (key === 'var' && d.thumb) {
       const thumb = document.getElementById('static-thumb');
       const modal = document.getElementById('img-modal');
       const img   = document.getElementById('modal-img');
       const close = document.getElementById('modal-close');
-      thumb.addEventListener('click', ()=>{
+      thumb.addEventListener('click', () => {
         img.src = d.full;
         modal.classList.remove('hidden');
       });
-      close.addEventListener('click', ()=>{
-        img.src=''; modal.classList.add('hidden');
+      close.addEventListener('click', () => {
+        img.src = '';
+        modal.classList.add('hidden');
       });
-      modal.addEventListener('click', e=>{
-        if (e.target===modal) { img.src=''; modal.classList.add('hidden'); }
+      modal.addEventListener('click', e => {
+        if (e.target === modal) {
+          img.src = '';
+          modal.classList.add('hidden');
+        }
       });
     }
   }
 
-  // === Render a puzzle ===
+  // === Render Puzzle ===
   function renderPuzzle(i) {
     const p = puzzles[i];
-    if (!p) return;  // should not happen
+    if (!p) return;
 
     current = i;
     failCount = 0;
@@ -222,12 +220,13 @@
         break;
 
       case 'stego':
-        puzzleAudio = null;
+        // Stego-bild med egen klass för responsivitet
         const si = document.createElement('img');
         si.src = p.img;
-        si.alt = '';
+        si.alt = 'Stegobild';
+        si.classList.add('stego-img');
         si.style.filter = 'brightness(0)';
-        si.addEventListener('click', ()=> si.style.filter = '');
+        si.addEventListener('click', () => si.style.filter = '');
         card.append(si);
         inputEl = document.createElement('input');
         inputEl.placeholder = p.hint;
@@ -239,8 +238,8 @@
         puzzleAudio = new Audio(p.src);
         puzzleAudio.preload = 'auto';
         const playBtn = document.createElement('button');
-        playBtn.textContent = p.type==='audio' ? 'Spela baklänges' : 'Spela morse';
-        playBtn.addEventListener('click', ()=>{
+        playBtn.textContent = (p.type==='audio' ? 'Spela baklänges' : 'Spela morse');
+        playBtn.addEventListener('click', () => {
           puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
         });
@@ -257,14 +256,13 @@
         break;
 
       case 'magic':
-        // build grid
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
-        for (let r=0; r<p.size; r++) {
-          for (let c=0; c<p.size; c++) {
+        for (let r = 0; r < p.size; r++) {
+          for (let c = 0; c < p.size; c++) {
             const cell = document.createElement('div');
             const v = p.grid[r][c];
-            if (v === "") {
+            if (v === '') {
               cell.className = 'magic-cell';
               const inp = document.createElement('input');
               inp.type = 'number';
@@ -281,7 +279,7 @@
         break;
 
       case 'final':
-        return renderFinal();  // handle separately
+        return renderFinal();
     }
 
     msgEl = document.createElement('div'); msgEl.className = 'error-msg';
@@ -291,18 +289,17 @@
 
     const sendBtn = document.createElement('button');
     sendBtn.textContent = 'Skicka';
-    sendBtn.addEventListener('click', ()=> checkAnswer(p,inputEl,msgEl,hintEl,card));
+    sendBtn.addEventListener('click', () => checkAnswer(p, inputEl, msgEl, hintEl, card));
     card.append(sendBtn);
 
     app.append(card);
     inputEl?.focus();
   }
 
-  // === Answer checking ===
+  // === Check Answer ===
   function checkAnswer(p, inputEl, msgEl, hintEl, card) {
     clearAnim(card);
 
-    // prime dynamic answer
     if (p.type === 'prime') {
       const mins = Math.floor((Date.now() - startTime)/60000);
       if (!isPrime(mins)) {
@@ -312,7 +309,6 @@
       p.answer = String(mins);
     }
 
-    // read answer
     const ans = inputEl?.value?.trim().toLowerCase() || '';
     let ok = false;
 
@@ -336,33 +332,29 @@
       case 'morse': {
         const clean = ans.replace(/\s+/g,'');
         ok = Array.isArray(p.answers) &&
-             p.answers.some(a=>a.replace(/\s+/g,'').toLowerCase()===clean);
+             p.answers.some(a => a.replace(/\s+/g,'') === clean);
         break;
       }
       case 'magic': {
         const inputs = Array.from(inputEl.querySelectorAll('input'));
-        const vals = inputs.map(i=>parseInt(i.value,10));
+        const vals   = inputs.map(i => parseInt(i.value,10));
         if (vals.some(isNaN)) {
           showError(msgEl,'Fyll alla rutor!');
           return;
         }
-        // build matrix
-        const M = [];
+        const M = [], size = p.size;
         let idx = 0;
-        for (let r=0; r<p.size; r++) {
+        for (let r=0; r<size; r++) {
           M[r] = [];
-          for (let c=0; c<p.size; c++) {
-            M[r][c] = p.grid[r][c]==="" ? vals[idx++] : p.grid[r][c];
+          for (let c=0; c<size; c++) {
+            M[r][c] = p.grid[r][c] === '' ? vals[idx++] : Number(p.grid[r][c]);
           }
         }
-        // row sums
         const rowsOk = M.every(row=>row.reduce((a,b)=>a+b,0)===p.target);
-        // column sums
-        const colsOk = Array.from({length:p.size})
-          .every(c=>M.reduce((s,row)=>s+row[c],0)===p.target);
-        // diagonals
+        const colsOk = Array.from({length:size})
+          .every(c=>M.reduce((sum,row)=>sum+row[c],0)===p.target);
         const d1 = M.reduce((s,row,r)=>s+row[r],0)===p.target;
-        const d2 = M.reduce((s,row,r)=>s+row[p.size-1-r],0)===p.target;
+        const d2 = M.reduce((s,row,r)=>s+row[size-1-r],0)===p.target;
         ok = rowsOk && colsOk && d1 && d2;
         break;
       }
@@ -372,7 +364,7 @@
       play(current+1 < puzzles.length ? 'correct' : 'finish');
       card.classList.add('correct');
       if (p.type !== 'final') {
-        setTimeout(()=> renderPuzzle(current+1), 500);
+        setTimeout(() => renderPuzzle(current+1), 500);
       }
     } else {
       play('wrong');
@@ -383,13 +375,17 @@
     }
   }
 
-  // === Final step: document & summary ===
+  // === Final view ===
   function renderFinal() {
-    // Stop timer and capture elapsed
     clearInterval(timerId);
     finalElapsed = Date.now() - startTime;
-    // Disable all nav
-    Object.values(navBtns).forEach(b=>{ b.disabled=true; b.classList.add('disabled'); });
+
+    // disable nav
+    Object.values(navBtns).forEach(b => {
+      b.disabled = true;
+      b.classList.add('disabled');
+      b.classList.remove('active');
+    });
     progEl.textContent = `Gåta ${puzzles.length} av ${puzzles.length}`;
 
     app.innerHTML = `
@@ -415,7 +411,7 @@
         <p>📸 Ta en skärmdump och skicka till domaren.</p>
       </div>`;
 
-    // Bind form
+    // Bind final form
     const photo   = document.getElementById('photo');
     const latinI  = document.getElementById('latin');
     const teamI   = document.getElementById('team');
@@ -431,46 +427,49 @@
       submit.disabled = !(
         photo.files.length === 1 &&
         latinI.value.trim() !== '' &&
-        teamI.value.trim() !== ''
+        teamI.value.trim()  !== ''
       );
     }
-    [photo, latinI, teamI].forEach(el=>el.addEventListener('input', validate));
-    photo.addEventListener('change', ()=>{
+    [photo, latinI, teamI].forEach(el => el.addEventListener('input', validate));
+
+    photo.addEventListener('change', () => {
       validate();
       const f = photo.files[0];
       if (f && f.size > 5*1024*1024) {
         alert('Max 5 MB.');
-        photo.value=''; preview.style.display='none'; validate();
+        photo.value = '';
+        preview.style.display = 'none';
+        validate();
         return;
       }
       const fr = new FileReader();
-      fr.onload = e=>{
+      fr.onload = e => {
         preview.src = e.target.result;
         preview.style.display = 'block';
       };
       fr.readAsDataURL(f);
     });
 
-    submit.addEventListener('click', ()=>{
-      // Fill summary
+    submit.addEventListener('click', () => {
       outLat.textContent  = latinI.value.trim();
       outTeam.textContent = teamI.value.trim();
       const mm = String(Math.floor(finalElapsed/60000)).padStart(2,'0');
       const ss = String(Math.floor((finalElapsed%60000)/1000)).padStart(2,'0');
       outTime.textContent = `${mm}:${ss}`;
-      const fr = new FileReader();
-      fr.onload = e=>{
-        outImg.src = e.target.result;
+
+      const fr2 = new FileReader();
+      fr2.onload = e2 => {
+        outImg.src = e2.target.result;
         document.getElementById('final-form').style.display = 'none';
         summary.style.visibility = 'visible';
-        summary.style.opacity = '1';
-        summary.style.transform = 'translateY(0)';
+        summary.style.opacity    = '1';
+        summary.style.transform  = 'translateY(0)';
       };
-      fr.readAsDataURL(photo.files[0]);
+      fr2.readAsDataURL(photo.files[0]);
     });
   }
 
-  // === Start ===
+  // Kick things off
   document.addEventListener('DOMContentLoaded', init);
 
 })();
