@@ -1,9 +1,7 @@
 {
   "name": "VÅRKAMP⁵",
   "short_name": "Vårkamp",
-  "description": "Ett interaktivt 5-delat utomhuspussel med ljud, stego, kryptologi och dokumentation.",
-  "start_url": "./index.html?homescreen=1",
-  "scope": "./",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#3b682d",
   "theme_color": "#3b682d",
