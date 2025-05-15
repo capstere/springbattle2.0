@@ -1,122 +1,415 @@
-/* css/styles.css */
-/* ===== 1. Variabler & reset ===== */
+/* ========================================================================
+   styles.css – Komplett stilmall för VÅRKAMP⁵
+   ======================================================================== */
+
+/* === 1. Färgvariabler och grundinställningar === */
 :root {
-  --bg:#3b682d; --fg:#fff; --card-bg:rgba(255,255,255,0.15);
-  --btn-bg:#f1fbc1; --btn-fg:#000; --accent:#ffdd57;
-  --radius:8px; --shadow:0 2px 8px rgba(0,0,0,0.2);
-  --error:#ff4444; --success:#8bc34a;
-  --font:-apple-system,Roboto,sans-serif;
-  --text-shadow:0 1px 2px rgba(0,0,0,0.7);
+  --bg: #3b682d;           /* Bakgrundsfärg */
+  --fg: #fff;              /* Textfärg */
+  --card-bg: rgba(255,255,255,0.15); /* Kortbakgrund */
+  --btn-bg: #f1fbc1;       /* Bakgrund för knappar/inmatningar */
+  --btn-fg: #000;          /* Textfärg på knappar/inmatningar */
+  --accent: #ffdd57;       /* Accentfärg (timer, highlights) */
+  --radius: 8px;           /* Rundade hörn */
+  --shadow: 0 2px 8px rgba(0,0,0,0.2); /* Skugga på kort */
+  --error: #ff4444;        /* Feltextfärg */
+  --success: #8bc34a;      /* Tipstextfärg */
+  --font: -apple-system, Roboto, sans-serif; /* Standardfont */
+  --text-shadow: 0 1px 2px rgba(0,0,0,0.7);    /* Lätt skugga på text */
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--fg);
-  font-family:var(--font);text-shadow:var(--text-shadow);
-  display:flex;justify-content:center;
-  padding:1rem;min-height:100vh;}
-.wrapper{width:100%;max-width:480px;padding-bottom:4rem;}
 
-/* ===== 2. Header ===== */
-header{text-align:center;margin-bottom:1rem;}
-header h1{font-size:1.8rem;}
-#timer{margin-top:.5rem;font-size:1.25rem;
-  background:var(--accent);color:var(--bg);
-  padding:.25rem .75rem;border-radius:var(--radius);
-  display:inline-block;animation:pulse 1.5s infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,221,87,0.5);}70%{box-shadow:0 0 0 10px rgba(255,221,87,0);}100%{box-shadow:0 0 0 0 rgba(255,221,87,0);}}
-#progress{margin-top:.25rem;font-size:1rem;}
+/* === 2. Global reset och box-sizing === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-/* ===== 3. Card & prompt ===== */
-.card{background:var(--card-bg);border-radius:var(--radius);
-  box-shadow:var(--shadow);padding:1rem;margin-bottom:1rem;
-  transition:transform .2s,box-shadow .2s;}
-.card:hover{transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-.prompt{font-size:1.3rem;margin-bottom:.75rem;text-shadow:var(--text-shadow);}
+/* === 3. Body och wrapper === */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  text-shadow: var(--text-shadow);
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  min-height: 100vh;
+}
+.wrapper {
+  width: 100%;
+  max-width: 480px;
+  padding-bottom: 4rem; /* Utrymme för navbar */
+}
 
-/* ===== 4. Inputs & buttons ===== */
-input,button{width:100%;padding:.75rem;font-size:1.1rem;
-  margin-top:.5rem;border:none;border-radius:var(--radius);
-  background:var(--btn-bg);color:var(--btn-fg);outline:none;
-  min-height:48px;}
-input::placeholder{color:rgba(0,0,0,0.5);}
-button:hover{filter:brightness(0.95);}
-button:active{opacity:.8;transition:none;}
-input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+/* === 4. Header, titel, timer och progress === */
+header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+header h1 {
+  font-size: 1.8rem;
+}
+#timer {
+  margin-top: .5rem;
+  font-size: 1.25rem;
+  background: var(--accent);
+  color: var(--bg);
+  padding: .25rem .75rem;
+  border-radius: var(--radius);
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255,221,87,0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(255,221,87,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,221,87,0); }
+}
+#progress {
+  margin-top: .25rem;
+  font-size: 1rem;
+}
 
-/* ===== 5. Fel- & tipstext ===== */
-.error-msg{color:var(--error);margin-top:.5rem;font-size:.9rem;}
-.hint-msg{color:var(--success);margin-top:.5rem;font-size:.9rem;animation:fadein .3s;}
-@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+/* === 5. Noscript- och update-banner === */
+.noscript-warning {
+  padding: 1rem;
+  background: #e3342f;
+  color: #fff;
+  text-align: center;
+  border-radius: var(--radius);
+  margin-top: 1rem;
+}
+.update-banner {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg);
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+}
 
-/* ===== 6. Feedback animation ===== */
-.card.correct{animation:blink-green .5s;}
-.card.shake  {animation:shake .4s;}
-@keyframes blink-green{0%{background-color:#b5ffbb;}100%{background-color:var(--card-bg);}}
-@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-8px);}40%,80%{transform:translateX(8px);}}
+/* === 6. Kort (card) och prompt === */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.prompt {
+  font-size: 1.3rem;
+  margin-bottom: .75rem;
+  text-shadow: var(--text-shadow);
+}
 
-/* ===== 7. Magic grid ===== */
-.magic-grid{display:grid;gap:8px;margin:1rem auto;max-width:360px;
-  grid-template-columns:repeat(4,1fr);}
-.magic-fixed{background:var(--card-bg);color:var(--fg);
-  font-weight:bold;display:flex;align-items:center;justify-content:center;
-  border-radius:var(--radius);padding:.75rem 0;}
-.magic-cell{background:var(--btn-bg);border:1px solid rgba(0,0,0,0.1);border-radius:var(--radius);}
-.magic-cell input{width:100%;background:transparent;border:none;
-  text-align:center;font-size:1rem;font-weight:bold;color:var(--btn-fg);outline:none;}
-.magic-cell input::placeholder{color:rgba(0,0,0,0.3);}
+/* === 7. Input- och knappstilar === */
+input,
+button {
+  width: 100%;
+  padding: .75rem;
+  font-size: 1.1rem;
+  margin-top: .5rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  outline: none;
+  min-height: 48px;
+}
+input::placeholder {
+  color: rgba(0,0,0,0.5);
+}
+button:hover {
+  filter: brightness(0.95);
+}
+button:active {
+  opacity: .8;
+  transition: none;
+}
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
 
-/* ===== 8. Startsida ===== */
-.start-card{text-align:center;}
-.start-icon{display:block;margin:2rem auto;width:150px;height:auto;}
-.start-btn{background:var(--accent);color:var(--bg);font-size:1.2rem;
-  padding:.75rem;margin-top:1.5rem;transition:filter .2s;}
-.start-btn:hover{filter:brightness(0.9);}
+/* === 8. Fel- och tipstext === */
+.error-msg {
+  color: var(--error);
+  margin-top: .5rem;
+  font-size: .9rem;
+}
+.hint-msg {
+  color: var(--success);
+  margin-top: .5rem;
+  font-size: .9rem;
+  animation: fadein .3s;
+}
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 
-/* ===== 9. Navbar ===== */
-.navbar{display:flex;justify-content:space-around;
-  background:rgba(255,255,255,0.1);padding:.5rem 0;
-  position:fixed;bottom:0;left:0;right:0;}
-.nav-btn{background:none;border:none;color:var(--btn-fg);
-  display:flex;flex-direction:column;align-items:center;opacity:.7;}
-.nav-btn.disabled{opacity:.3;pointer-events:none;}
-.nav-btn.active{opacity:1;}
-.nav-btn img{width:24px;height:24px;margin-bottom:.25rem;}
-.nav-btn span{font-size:.9rem;}
+/* === 9. Visuella feedback-animationsklasser === */
+.card.correct {
+  animation: blink-green .5s;
+}
+.card.shake {
+  animation: shake .4s;
+}
+@keyframes blink-green {
+  0%   { background-color: #b5ffbb; }
+  100% { background-color: var(--card-bg); }
+}
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-8px); }
+  40%  { transform: translateX(8px); }
+  60%  { transform: translateX(-8px); }
+  80%  { transform: translateX(8px); }
+  100% { transform: translateX(0); }
+}
 
-/* ===== 10. Statiska sidor ===== */
-.static-icon{display:block;margin:1rem auto;width:40px;height:40px;}
-.static-text{white-space:pre-wrap;line-height:1.4;}
-.static-thumb{display:block;margin:1rem auto;max-width:100px;
-  cursor:zoom-in;border:2px solid var(--btn-fg);border-radius:var(--radius);}
+/* === 10. Magic‐grid (magisk kvadrat) === */
+.magic-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 1rem auto;
+  max-width: 360px;
+}
+.magic-fixed {
+  background: var(--card-bg);
+  color: var(--fg);
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  padding: .75rem 0;
+}
+.magic-cell {
+  background: var(--btn-bg);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+}
+.magic-cell input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--btn-fg);
+  outline: none;
+}
+.magic-cell input::placeholder {
+  color: rgba(0,0,0,0.3);
+}
 
-/* ===== 11. Modal ===== */
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;
-  background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;
-  z-index:10000;}
-.modal.hidden{display:none;}
-.modal-content{position:relative;max-width:90%;max-height:90%;}
-.modal-content img{width:100%;height:auto;border-radius:var(--radius);}
-.modal-close{position:absolute;top:-.5rem;right:-.5rem;
-  background:var(--btn-bg);border:none;font-size:1.5rem;line-height:1;
-  padding:.25rem .5rem;border-radius:50%;cursor:pointer;}
+/* === 11. Startsida (intro-vy) === */
+.start-card {
+  text-align: center;
+}
+.start-icon {
+  display: block;
+  margin: 2rem auto;
+  width: 150px;
+  height: auto;
+}
+.start-btn {
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 1.2rem;
+  padding: .75rem;
+  margin-top: 1.5rem;
+  transition: filter .2s;
+}
+.start-btn:hover {
+  filter: brightness(0.9);
+}
 
-/* ===== 12. Final-form & summary ===== */
-#final-form fieldset{border:1px solid rgba(255,255,255,0.3);
-  border-radius:var(--radius);padding:1rem;}
-#final-form legend{padding:0 .5rem;font-weight:bold;}
-#final-form label{display:block;margin-top:1rem;}
-#final-form input[type="file"]{padding:.5rem 0;background:none;color:var(--fg);font-size:.9rem;}
-#final-form input[type="file"]::file-selector-button{background:var(--btn-bg);color:var(--btn-fg);
-  border:none;padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;}
-#preview{display:none;width:100%;margin-top:.5rem;border-radius:var(--radius);}
-button:disabled{opacity:.5;cursor:not-allowed;}
-.summary{opacity:0;visibility:hidden;transform:translateY(20px);transition:all .5s ease;}
-.summary.visible{opacity:1;visibility:visible;transform:translateY(0);}
-.summary img{width:100%;border-radius:var(--radius);margin-bottom:1rem;}
-.field{margin-bottom:.75rem;}
+/* === 12. Botten‐navbar === */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255,255,255,0.1);
+  padding: .5rem 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--btn-fg);
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: .7;
+}
+.nav-btn.disabled {
+  opacity: .3;
+  pointer-events: none;
+}
+.nav-btn.active {
+  opacity: 1;
+}
+.nav-btn img {
+  width: 24px;
+  height: 24px;
+  margin-bottom: .25rem;
+}
+.nav-btn span {
+  font-size: .9rem;
+}
 
-/* ===== 13. Responsivt ===== */
-@media(max-width:400px){
-  header h1{font-size:1.5rem;}
-  .prompt{font-size:1.2rem;}
-  .start-icon{width:120px;}
+/* === 13. Statiska sidor (Vår/Kamp/Hjälp) === */
+.static-icon {
+  display: block;
+  margin: 1rem auto;
+  width: 40px;
+  height: 40px;
+}
+.static-text {
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+.static-thumb {
+  display: block;
+  margin: 1rem auto;
+  max-width: 100px;
+  cursor: zoom-in;
+  border: 2px solid var(--btn-fg);
+  border-radius: var(--radius);
+}
+
+/* === 14. Modal för bildförstoring på Vår-sidan === */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+.modal.hidden {
+  display: none;
+}
+.modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+.modal-content img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.modal-close {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  background: var(--btn-bg);
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: .25rem .5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* === 15. Form & summary för sista gåtan === */
+#final-form fieldset {
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+#final-form legend {
+  padding: 0 .5rem;
+  font-weight: bold;
+}
+#final-form label {
+  display: block;
+  margin-top: 1rem;
+}
+#final-form input[type="file"] {
+  padding: .5rem 0;
+  background: none;
+  color: var(--fg);
+  font-size: .9rem;
+}
+#final-form input[type="file"]::file-selector-button {
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: none;
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+#final-form input[type="file"]::file-selector-button:hover {
+  filter: brightness(0.95);
+}
+#preview {
+  display: none;
+  width: 100%;
+  margin-top: .5rem;
+  border-radius: var(--radius);
+}
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.summary {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all .5s ease;
+}
+.summary.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.summary img {
+  width: 100%;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+.field {
+  margin-bottom: .75rem;
+}
+
+/* === 16. Stego-specifik bildklass === */
+.stego-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: .75rem auto;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* === 17. Responsiv justering för mindre enheter === */
+@media (max-width: 400px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  .prompt {
+    font-size: 1.2rem;
+  }
+  .start-icon {
+    width: 120px;
+  }
 }
