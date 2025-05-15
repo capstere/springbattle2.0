@@ -1,20 +1,28 @@
 {
   "name": "VÅRKAMP⁵",
   "short_name": "Vårkamp",
+  "description": "Ett interaktivt 11-delat utomhuspussel med ljud, stego, kryptologi och dokumentation.",
+  "lang": "sv-SE",
+  "dir": "ltr",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#3b682d",
   "theme_color": "#3b682d",
+  "categories": ["game", "puzzle"],
   "icons": [
     {
-      "src": "assets/icons/play.svg",
+      "src": "assets/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "assets/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
