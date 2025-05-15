@@ -3,7 +3,7 @@
 <head>
   <!-- =============================================================
        Meta & titelinformation
-       ============================================================= -->
+  ============================================================= -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VÅRKAMP⁵</title>
@@ -12,67 +12,51 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
 
   <!-- =============================================================
-       PWA-manifest och scope
-       ============================================================= -->
+       PWA-manifest
+  ============================================================= -->
   <link rel="manifest" href="manifest.json">
-  <!-- (scope anges i manifest.json) -->
 
   <!-- =============================================================
        Favicon & Apple-touch-icon
-       ============================================================= -->
+  ============================================================= -->
   <link rel="icon" href="assets/icons/play.svg">
   <link rel="apple-touch-icon" href="assets/icons/icon-512.png">
 
   <!-- =============================================================
-       Huvud-CSS (med versionsquery för cache-busting)
-       ============================================================= -->
-  <link rel="stylesheet" href="css/styles.css?v=4">
+       Huvud‐CSS
+  ============================================================= -->
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Wrapper runt hela applikationen -->
   <div class="wrapper">
 
-    <!-- =========================================================
-         Header titel, timer och progress
-         ========================================================= -->
+    <!-- Header med titel, timer och progress -->
     <header>
       <h1>VÅRKAMP<sup>5</sup></h1>
       <div id="timer" aria-live="polite">00:00</div>
       <div id="progress" aria-live="polite"></div>
     </header>
 
-    <!-- =========================================================
-         Main: all dynamisk vy renderas här av script.js
-         ========================================================= -->
-    <main id="app" role="main">
-      <!-- Intro, gåtor, statiska sidor och finalvy hamnar här -->
-    </main>
+    <!-- Main-content renderas dynamiskt -->
+    <main id="app" role="main"></main>
 
-    <!-- =========================================================
-         Navigationsmeny längst ner (Spela / Vår / Kamp / Hjälp)
-         ========================================================= -->
+    <!-- Botten‐navigering -->
     <nav class="navbar">
       <button id="nav-play" class="nav-btn active">
-        <img src="assets/icons/play.svg" alt="Spela">
-        <span>Spela</span>
+        <img src="assets/icons/play.svg" alt="Spela"><span>Spela</span>
       </button>
       <button id="nav-var" class="nav-btn disabled">
-        <img src="assets/icons/spring.svg" alt="Vår">
-        <span>Vår</span>
+        <img src="assets/icons/spring.svg" alt="Vår"><span>Vår</span>
       </button>
       <button id="nav-kamp" class="nav-btn disabled">
-        <img src="assets/icons/fight.svg" alt="Kamp">
-        <span>Kamp</span>
+        <img src="assets/icons/fight.svg" alt="Kamp"><span>Kamp</span>
       </button>
       <button id="nav-help" class="nav-btn disabled">
-        <img src="assets/icons/help.svg" alt="Hjälp">
-        <span>Hjälp</span>
+        <img src="assets/icons/help.svg" alt="Hjälp"><span>Hjälp</span>
       </button>
     </nav>
 
-    <!-- =========================================================
-         Modal för bildförstoring på “Vår”-fliken
-         ========================================================= -->
+    <!-- Modal för att förstora bilder -->
     <div id="img-modal" class="modal hidden">
       <div class="modal-content">
         <button id="modal-close" class="modal-close" aria-label="Stäng">&times;</button>
@@ -82,57 +66,45 @@
 
   </div><!-- /.wrapper -->
 
-  <!-- =============================================================
-       Noscript-varning
-       ============================================================= -->
   <noscript>
-    <div class="noscript-warning">
-      ⚠️ JavaScript krävs för att sidan ska fungera.
-    </div>
+    <div class="noscript-warning">⚠️ JavaScript krävs för att sidan ska fungera.</div>
   </noscript>
 
-  <!-- =============================================================
-       Ljudeffekter (preload)
-       ============================================================= -->
+  <!-- Ljudeffekter -->
   <audio id="audio-correct" src="assets/audio/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong"   src="assets/audio/wrong.mp3"   preload="auto"></audio>
   <audio id="audio-finish"  src="assets/audio/finish.mp3"  preload="auto"></audio>
 
-  <!-- =============================================================
-       Huvudskript (med versionsquery för cache-busting)
-       ============================================================= -->
-  <script defer src="js/script.js?v=4"></script>
+  <!-- Huvudskript -->
+  <script defer src="js/script.js"></script>
 
-  <!-- =============================================================
-       Service Worker & update-banner
-       ============================================================= -->
+  <!-- Service Worker‐registrering & update‐banner -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
           .then(reg => {
-            // Om det finns en väntande uppdatering, visa banner
             if (reg.waiting) showUpdate(reg);
             reg.addEventListener('updatefound', () => {
-              const installing = reg.installing;
-              installing.addEventListener('statechange', () => {
-                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+              const ins = reg.installing;
+              ins.addEventListener('statechange', () => {
+                if (ins.state==='installed' && navigator.serviceWorker.controller) {
                   showUpdate(reg);
                 }
               });
             });
           })
-          .catch(() => { /* Ignorera registreringsfel */ });
+          .catch(()=>{/* ignore */});
       });
-      navigator.serviceWorker.addEventListener('controllerchange', () => location.reload());
+      navigator.serviceWorker.addEventListener('controllerchange', ()=>location.reload());
     }
     function showUpdate(reg) {
-      const banner = document.createElement('div');
-      banner.className = 'update-banner';
-      banner.innerHTML = 'Ny version finns! <button id="upd">Uppdatera</button>';
-      document.body.appendChild(banner);
-      banner.querySelector('#upd').addEventListener('click', () => {
-        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      const b = document.createElement('div');
+      b.className = 'update-banner';
+      b.innerHTML = `Ny version finns! <button id="upd">Uppdatera</button>`;
+      document.body.appendChild(b);
+      b.querySelector('#upd').addEventListener('click', ()=>{
+        reg.waiting.postMessage({type:'SKIP_WAITING'});
       });
     }
   </script>
