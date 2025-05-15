@@ -21,7 +21,7 @@
   };
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 2) GLOBALT STATE + localStorage-nycklar
+  // 2) GLOBALT STATE + localStorage‐nycklar
   // ────────────────────────────────────────────────────────────────────────────
   let puzzles, staticPages, validNames;
   let current     = 0;
@@ -63,19 +63,17 @@
   function showError(el, msg) {
     el.textContent = msg;
   }
-
   function clearError(el) {
     el.textContent = '';
   }
-
   function clearAnim(card) {
     card.classList.remove('correct', 'shake');
   }
 
   function updateTimer() {
     const diff = Date.now() - startTime;
-    const mm = String(Math.floor(diff / 60000)).padStart(2,'0');
-    const ss = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+    const mm = String(Math.floor(diff/60000)).padStart(2,'0');
+    const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
     timerEl.textContent = `${mm}:${ss}`;
   }
 
@@ -89,27 +87,29 @@
     staticPages = data.staticPages;
     validNames  = data.validNames;
 
-    // preload ljudeffekter + stego-bild
+    // Preload ljud + stegobild
     Object.values(sounds).forEach(a=>a.load());
     const steg = puzzles.find(p=>p.type==='stego');
     if (steg?.img) new Image().src = steg.img;
 
-    // binda nav-knappar
-    Object.entries(navBtns).forEach(([key, btn]) => {
-      btn.addEventListener('click', () => activateTab(key));
+    // Bind navigeringsknappar
+    Object.entries(navBtns).forEach(([key,btn])=>{
+      btn.addEventListener('click', ()=>activateTab(key));
     });
 
-    // återuppta om redan startat
+    // Återuppta om redan startat
     if (localStorage.getItem(LS_STARTED) === '1') {
       started   = true;
-      startTime = parseInt(localStorage.getItem(LS_START_TIME), 10) || Date.now();
-      current   = parseInt(localStorage.getItem(LS_CURRENT),  10) || 0;
+      startTime = parseInt(localStorage.getItem(LS_START_TIME),10) || Date.now();
+      current   = parseInt(localStorage.getItem(LS_CURRENT),10)   || 0;
       setNavEnabled(true);
       updateTimer();
       timerId = setInterval(updateTimer, 500);
+    } else {
+      setNavEnabled(false);
     }
 
-    // öppna rätt flik
+    // Visa rätt flik
     activateTab('play');
   }
 
@@ -117,10 +117,10 @@
   // 5) LÅS/AVLÅS NAV
   // ────────────────────────────────────────────────────────────────────────────
   function setNavEnabled(on) {
-    ['var','kamp','help'].forEach(k => {
-      const btn = navBtns[k];
-      btn.disabled = !on;
-      btn.classList.toggle('disabled', !on);
+    ['var','kamp','help'].forEach(k=>{
+      const b = navBtns[k];
+      b.disabled = !on;
+      b.classList.toggle('disabled', !on);
     });
   }
 
@@ -128,9 +128,11 @@
   // 6) VÄXLA FLIK
   // ────────────────────────────────────────────────────────────────────────────
   function activateTab(tab) {
-    Object.values(navBtns).forEach(b => b.classList.remove('active'));
+    // Highlight
+    Object.values(navBtns).forEach(b=>b.classList.remove('active'));
     navBtns[tab].classList.add('active');
 
+    // Visa vy
     if (tab === 'play') {
       if (!started) showIntro();
       else          renderPuzzle(current);
@@ -140,25 +142,31 @@
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 7) INTRO-VY
+  // 7) INTRO‐VY
   // ────────────────────────────────────────────────────────────────────────────
   function showIntro() {
     clearInterval(timerId);
+    timerId = null;
     timerEl.textContent = '00:00';
     progEl.textContent  = '';
     setNavEnabled(false);
+
     app.innerHTML = `
       <div class="card start-card">
-        <img src="assets/icons/icon-512.png" class="start-icon" alt="Logo">
-        <p class="prompt">Välkommen till tävlingen!</p>
+        <img src="assets/icons/icon-512.png"
+             class="start-icon"
+             alt="VÅRKAMP⁵-logo">
+        <p class="prompt">Välkommen till tävlingens första gren!</p>
         <button id="startBtn" class="start-btn">Starta tävlingen</button>
       </div>`;
-    document.getElementById('startBtn').addEventListener('click', () => {
+
+    document.getElementById('startBtn').addEventListener('click', ()=>{
       started = true;
       startTime = Date.now();
       localStorage.setItem(LS_STARTED,    '1');
       localStorage.setItem(LS_START_TIME, String(startTime));
-      localStorage.setItem(LS_CURRENT,    '0');
+      current = 0;
+      localStorage.setItem(LS_CURRENT, '0');
       setNavEnabled(true);
       updateTimer();
       timerId = setInterval(updateTimer, 500);
@@ -167,32 +175,39 @@
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 8) STATISKA SIDOR (Vår/Kamp/Hjälp)
+  // 8) STATISKA Sidor (Vår/Kamp/Hjälp)
   // ────────────────────────────────────────────────────────────────────────────
   function showStatic(key) {
     progEl.textContent = staticPages[key].title;
     const d = staticPages[key];
     app.innerHTML = `
       <div class="card">
-        <img src="${d.icon}" class="static-icon" alt="${d.title}">
+        <img src="${d.icon}"
+             class="static-icon"
+             alt="${d.title}">
         <h2>${d.title}</h2>
         <p class="static-text">${d.text.replace(/\n/g,'<br>')}</p>
-        ${d.thumb ? `<img id="static-thumb" src="${d.thumb}" class="static-thumb">` : ''}
+        ${d.thumb ? `<img id="static-thumb"
+                        src="${d.thumb}"
+                        class="static-thumb"
+                        alt="">` : ''}
       </div>`;
-    if (d.thumb) {
+
+    // Bild‐modal på "Vår"
+    if (key === 'var' && d.thumb) {
       const thumb = document.getElementById('static-thumb');
       const modal = document.getElementById('img-modal');
       const img   = document.getElementById('modal-img');
       const close = document.getElementById('modal-close');
-      thumb.addEventListener('click', () => {
+      thumb.addEventListener('click', ()=>{
         img.src = d.full;
         modal.classList.remove('hidden');
       });
-      close.addEventListener('click', () => {
+      close.addEventListener('click', ()=>{
         img.src = '';
         modal.classList.add('hidden');
       });
-      modal.addEventListener('click', e => {
+      modal.addEventListener('click', e=>{
         if (e.target === modal) {
           img.src = '';
           modal.classList.add('hidden');
@@ -211,31 +226,38 @@
     current = i;
     localStorage.setItem(LS_CURRENT, String(i));
     failCount = 0;
-    clearError(progEl);
+
     progEl.textContent = `Gåta ${i+1} av ${puzzles.length}`;
     app.innerHTML = '';
 
-    // om timer inte redan tickar, starta
+    // Starta timer om den inte redan tickar
     if (!timerId) {
       updateTimer();
       timerId = setInterval(updateTimer, 500);
     }
 
+    // Stoppa eventuella ljud
     if (puzzleAudio) {
       puzzleAudio.pause();
       puzzleAudio = null;
     }
 
+    // Bygg kortet
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<div class="prompt">${p.prompt}</div>`;
+    const prm  = document.createElement('div');
+    prm.className = 'prompt';
+    prm.textContent = p.prompt;
+    card.append(prm);
 
     let inputEl, msgEl, hintEl;
 
     switch (p.type) {
       case 'name':
       case 'text':
-        inputEl = createInput('text', 'Skriv svar här');
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
@@ -244,26 +266,34 @@
         if (p.img) {
           const im = document.createElement('img');
           im.src = p.img;
-          im.className = 'card-img';
+          im.className = 'stego-img';
           card.append(im);
         }
-        inputEl = createInput('number', 'Skriv talet');
+        inputEl = document.createElement('input');
+        inputEl.type = 'number';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
       case 'word':
-        inputEl = createInput('text', 'Skriv ordet');
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
       case 'stego':
+        // Stego‐bild
         const si = document.createElement('img');
         si.src = p.img;
         si.className = 'stego-img';
         si.style.filter = 'brightness(0)';
-        si.addEventListener('click', () => si.style.filter = '');
+        si.addEventListener('click', ()=> si.style.filter = '');
         card.append(si);
-        inputEl = createInput('text', 'Skriv talet');
+        // Svarruta
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
@@ -272,18 +302,21 @@
         puzzleAudio.preload = 'auto';
         const ba = document.createElement('button');
         ba.textContent = 'Spela baklänges';
-        ba.addEventListener('click', () => {
-          puzzleAudio.pause();
+        ba.addEventListener('click', ()=>{
           puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
         });
         card.append(ba);
-        inputEl = createInput('text', 'Skriv svar här');
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
       case 'prime':
-        inputEl = createInput('text', 'Skriv primtalet');
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
@@ -292,30 +325,33 @@
         puzzleAudio.preload = 'auto';
         const bm = document.createElement('button');
         bm.textContent = 'Spela morse';
-        bm.addEventListener('click', () => {
-          puzzleAudio.pause();
+        bm.addEventListener('click', ()=>{
           puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
         });
         card.append(bm);
-        inputEl = createInput('text', 'Ange kod här');
+        inputEl = document.createElement('input');
+        inputEl.type = 'text';
+        inputEl.placeholder = p.hint;
         card.append(inputEl);
         break;
 
       case 'magic':
+        // Bygg “magisk kvadrat”
         const grid = document.createElement('div');
         grid.className = 'magic-grid';
         for (let r = 0; r < p.size; r++) {
           for (let c = 0; c < p.size; c++) {
+            const v = p.grid[r][c];
             const cell = document.createElement('div');
-            if (p.grid[r][c] === '') {
+            if (v === '') {
               cell.className = 'magic-cell';
               const inp = document.createElement('input');
               inp.type = 'number';
               cell.append(inp);
             } else {
               cell.className = 'magic-fixed';
-              cell.textContent = p.grid[r][c];
+              cell.textContent = v;
             }
             grid.append(cell);
           }
@@ -323,30 +359,24 @@
         card.append(grid);
         inputEl = grid;
         break;
+
+      case 'final':
+        return renderFinal();
     }
 
-    // feltext + hint (visas först efter 2 fel)
-    msgEl  = document.createElement('div');
-    msgEl.className = 'error-msg';
-    hintEl = document.createElement('div');
-    hintEl.className = 'hint-msg';
+    // Fel‐ och hint‐ruta
+    msgEl  = document.createElement('div'); msgEl.className = 'error-msg';
+    hintEl = document.createElement('div'); hintEl.className = 'hint-msg';
     card.append(msgEl, hintEl);
 
-    // skicka-knapp
+    // Skicka‐knapp
     const btn = document.createElement('button');
     btn.textContent = 'Skicka';
-    btn.addEventListener('click', () => checkAnswer(p, inputEl, msgEl, hintEl, card));
+    btn.addEventListener('click', ()=> checkAnswer(p, inputEl, msgEl, hintEl, card));
     card.append(btn);
 
     app.append(card);
     inputEl?.focus();
-  }
-
-  function createInput(type, placeholder) {
-    const i = document.createElement('input');
-    i.type = type;
-    i.placeholder = placeholder;
-    return i;
   }
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -356,17 +386,17 @@
     clearAnim(card);
     clearError(msgEl);
 
-    // stoppas eventuellt ljud
+    // Stoppa ev. ljud
     if (puzzleAudio) {
       puzzleAudio.pause();
       puzzleAudio = null;
     }
 
-    // dynamiskt primtal-svar
+    // Dynamiskt primtal‐svar
     if (p.type === 'prime') {
-      const mins = Math.floor((Date.now() - startTime) / 60000);
+      const mins = Math.floor((Date.now() - startTime)/60000);
       if (!isPrime(mins)) {
-        showError(msgEl, '⏳ Vänta till primtal-minut!');
+        showError(msgEl, '⏳ Vänta till primtal‐minut!');
         return;
       }
       p.answer = String(mins);
@@ -392,62 +422,69 @@
       case 'prime':
         ok = ans === String(p.answer);
         break;
-      case 'morse':
-        const clean = ans.replace(/\s+/g,'');
+      case 'morse': {
+        const cleaned = ans.replace(/\s+/g,'');
         ok = Array.isArray(p.answers) &&
-             p.answers.some(a => a.replace(/\s+/g,'').toLowerCase() === clean);
+             p.answers.some(a => a.replace(/\s+/g,'').toLowerCase() === cleaned);
         break;
-      case 'magic':
+      }
+      case 'magic': {
+        // Läs in alla rutor
         const vals = Array.from(inputEl.querySelectorAll('input'))
-                          .map(i => parseInt(i.value, 10));
+                          .map(i => parseInt(i.value,10));
         if (vals.some(isNaN)) {
           showError(msgEl, 'Fyll alla rutor!');
           return;
         }
-        // bygg matris
+        // Bygg matris
         const M = [], sz = p.size, tgt = p.target;
         let idx = 0;
-        for (let r = 0; r < sz; r++) {
+        for (let r=0; r<sz; r++) {
           M[r] = [];
-          for (let c = 0; c < sz; c++) {
-            M[r][c] = p.grid[r][c] === '' ? vals[idx++] : Number(p.grid[r][c]);
+          for (let c=0; c<sz; c++) {
+            M[r][c] = p.grid[r][c]==='' ? vals[idx++] : Number(p.grid[r][c]);
           }
         }
+        // Rader
         const rowsOk = M.every(row => row.reduce((a,b)=>a+b,0) === tgt);
-        const colsOk = Array.from({length:sz}).every(c =>
-          M.reduce((sum,row)=>sum+row[c],0) === tgt
-        );
+        // Kolumner
+        const colsOk = Array.from({length:sz})
+          .every((_, col) =>
+            M.reduce((sum,row)=> sum + row[col], 0) === tgt
+          );
+        // Diagonaler
         const d1 = M.reduce((s,row,i)=>s+row[i],0) === tgt;
         const d2 = M.reduce((s,row,i)=>s+row[sz-1-i],0) === tgt;
         ok = rowsOk && colsOk && d1 && d2;
         break;
+      }
     }
 
     if (ok) {
       playSound(current+1 < puzzles.length ? 'correct' : 'finish');
       card.classList.add('correct');
-      setTimeout(() => {
-        renderPuzzle(current+1);
-      }, 500);
+      setTimeout(()=> renderPuzzle(current+1), 500);
     } else {
       playSound('wrong');
       card.classList.add('shake');
       showError(msgEl, '❌ Fel – försök igen!');
-      failCount++;
-      if (failCount >= 2 && p.hint) {
+      if (++failCount >= 2 && p.hint) {
         hintEl.textContent = `Tips: ${p.hint}`;
       }
     }
   }
 
   // ────────────────────────────────────────────────────────────────────────────
-  // 11) Slutvy (final)
+  // 11) SLUTVY (final)
   // ────────────────────────────────────────────────────────────────────────────
   function renderFinal() {
     clearInterval(timerId);
+    timerId = null;
     playSound('finish');
+
+    // Lås all navigation
     setNavEnabled(false);
-    Object.values(navBtns).forEach(b => b.classList.remove('active'));
+    Object.values(navBtns).forEach(b=>b.classList.remove('active'));
 
     app.innerHTML = `
       <div class="card" id="final-form">
@@ -468,11 +505,13 @@
         <div class="field"><strong>Latinskt namn:</strong> <span id="out-latin"></span></div>
         <div class="field"><strong>Lagnamn:</strong> <span id="out-team"></span></div>
         <div class="field"><strong>Tid:</strong> <span id="out-time"></span></div>
-        <div class="field"><strong>Bild:</strong><br><img id="out-image" style="width:100%;border-radius:8px;"></div>
+        <div class="field"><strong>Bild:</strong><br>
+          <img id="out-image" style="width:100%;border-radius:8px;">
+        </div>
         <p>📸 Ta en skärmdump och skicka till domaren.</p>
       </div>`;
 
-    // ... bindning av final-form som tidigare ...
+    // Bind final‐form
     const photo   = document.getElementById('photo');
     const latinI  = document.getElementById('latin');
     const teamI   = document.getElementById('team');
@@ -492,7 +531,7 @@
     }
     [photo, latinI, teamI].forEach(el => el.addEventListener('input', validate));
 
-    photo.addEventListener('change', () => {
+    photo.addEventListener('change', ()=>{
       validate();
       const f = photo.files[0];
       if (f && f.size > 5*1024*1024) {
@@ -503,17 +542,17 @@
         return;
       }
       const fr = new FileReader();
-      fr.onload = e => {
+      fr.onload = e=> {
         preview.src = e.target.result;
         preview.style.display = 'block';
       };
       fr.readAsDataURL(f);
     });
 
-    submit.addEventListener('click', () => {
+    submit.addEventListener('click', ()=>{
       const diff = Date.now() - startTime;
-      const mm = String(Math.floor(diff/60000)).padStart(2,'0');
-      const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+      const mm   = String(Math.floor(diff/60000)).padStart(2,'0');
+      const ss   = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
       outTime.textContent = `${mm}:${ss}`;
       outLat.textContent  = latinI.value.trim();
       outTeam.textContent = teamI.value.trim();
@@ -527,6 +566,6 @@
     });
   }
 
-  // starta init när DOM är klar
+  // Starta init
   document.addEventListener('DOMContentLoaded', init);
 })();
