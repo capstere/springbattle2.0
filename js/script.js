@@ -182,7 +182,7 @@
       case 'name':
       case 'text':
       case 'word':
-        inputEl = makeInput('text', p.hint);
+        inputEl = makeInput('text', p.placeholder || p.hint)
         card.append(inputEl);
         break;
 
@@ -200,7 +200,7 @@
         si.style.filter = 'brightness(0)';
         si.onclick = () => si.style.filter = '';
         card.append(si);
-        inputEl = makeInput('text', p.hint);
+        inputEl = makeInput('text', p.placeholder || p.hint)
         card.append(inputEl);
         break;
 
@@ -228,12 +228,12 @@
           puzzleAudio.play().catch(()=>{});
         };
         card.append(btnM);
-        inputEl = makeInput('text', p.hint);
+        inputEl = makeInput('text', p.placeholder || p.hint)
         card.append(inputEl);
         break;
 
       case 'prime':
-        inputEl = makeInput('text', p.hint);
+        inputEl = makeInput('text', p.placeholder || p.hint)
         card.append(inputEl);
         break;
 
