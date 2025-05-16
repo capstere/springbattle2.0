@@ -1,10 +1,11 @@
 {
   "puzzles": [
     {
-      "prompt": "1: Vem i laget startar resan?",
+      "prompt": "1: Vi börjar lätt, vem där?",
       "type": "name",
       "answer": "*",
-      "hint": "Skriv inte något du ångrar"
+      "placeholder": "Skriv här",
+      "hint": "Skriv ett förnamn"
     },
     {
       "prompt": "2: Vad döljer sig i bilden?",
