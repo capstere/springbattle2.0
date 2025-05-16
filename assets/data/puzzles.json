@@ -12,7 +12,7 @@
       "type": "stego",
       "answer": "17",
       "img": "assets/images/stego.png",
-      "placeholder": "Siffra"
+      "placeholder": "Siffra",
       "hint": "Andas och ta ett steg tillbaka"
     },
     {
@@ -20,12 +20,13 @@
       "type": "audio",
       "answer": "editpir",
       "src": "assets/audio/p3-chorus-rev.mp3",
-      "placeholder": "Svar"
+      "placeholder": "Svar",
       "hint": "Slutet är början"
     },
     {
       "prompt": "4: Vilket är primtalet?",
       "type": "prime",
+      "placeholder": "Svar",
       "hint": "Ni har 17 chanser första timmen"
     },
     {
@@ -58,24 +59,28 @@
       "prompt": "7: Hur många smultron har Arcimboldo målat i La Primavera?",
       "type": "count",
       "answer": 2,
+      "placeholder": "Svar",
       "hint": "Nu är siffran 17 obetydlig"
     },
     {
       "prompt": "8: Vad heter den aktiva substansen i nässprayer vid kramp?",
       "type": "text",
       "answer": "midazolamhydroklorid",
+      "placeholder": "Svar",
       "hint": "Copy + Paste"
     },
     {
       "prompt": "9: Vart ringer du för trovärdig info?",
       "type": "number",
       "answer": "11313",
+      "placeholder": "Svar",
       "hint": "Fyra siffror"
     },
     {
       "prompt": "10: Vilket ord framträder ur vinter och sommar, strid och räddning?",
       "type": "word",
       "answer": "målgruppen",
+      "placeholder": "Svar",
       "hint": "Korpulent skrift på vift"
     },
     {
@@ -105,6 +110,6 @@
   "validNames": [
     "jana","jens","clare","johannes","jakob","nille","jonatan","jennifer",
     "ville","simon","matias","liza","samer","christina","oscar","rebecca",
-    "philip","hampus","amelia","malin","joel"
+    "philip","hampus","amelia","malin","joel","jonte","jenne","niclas","jacke","matie"
   ]
 }
