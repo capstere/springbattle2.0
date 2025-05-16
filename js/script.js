@@ -117,8 +117,8 @@
     app.innerHTML = `
       <div class="card start-card">
         <img src="assets/icons/icon-512.png" class="start-icon" alt="">
-        <p class="prompt">Välkommen!</p>
-        <button id="startBtn" class="start-btn">Starta tävlingen</button>
+        <p class="prompt">Välkommen till tävlingsgren V!</p>
+        <button id="startBtn" class="start-btn">START</button>
       </div>`;
 
     document.getElementById('startBtn').onclick = () => {
@@ -208,7 +208,7 @@
         puzzleAudio = new Audio(p.src);
         puzzleAudio.preload = 'auto';
         const btnB = document.createElement('button');
-        btnB.textContent = 'Spela baklänges';
+        btnB.textContent = 'Spela upp musik!';
         btnB.onclick = () => {
           puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
@@ -222,7 +222,7 @@
         puzzleAudio = new Audio(p.src);
         puzzleAudio.preload = 'auto';
         const btnM = document.createElement('button');
-        btnM.textContent = 'Spela morse';
+        btnM.textContent = 'Spela upp morse!';
         btnM.onclick = () => {
           puzzleAudio.currentTime = 0;
           puzzleAudio.play().catch(()=>{});
@@ -305,7 +305,7 @@
     if (p.type==='prime') {
       const mins = Math.floor((Date.now() - startTime)/60000);
       if (!isPrime(mins)) {
-        msgEl.textContent = '⏳ Vänta till primtal-minut!';
+        msgEl.textContent = '⏳ Vänta till rätt primtal!';
         return;
       }
       p.answer = String(mins);
@@ -346,7 +346,7 @@
         const vals = Array.from(inputEl.querySelectorAll('input'))
                           .map(i => parseInt(i.value, 10));
         if (vals.some(v=>isNaN(v))) {
-          msgEl.textContent = 'Fyll alla rutor!';
+          msgEl.textContent = '❌ Gör om - gör rätt!';
           return;
         }
         // bygg matris
@@ -391,24 +391,24 @@
     app.innerHTML = `
       <div class="card" id="final-form">
         <fieldset>
-          <legend>Dokumentera trädet</legend>
-          <label>1. Ta en gruppbild med trädet</label>
+          <legend>VÅR HÄLSAD! Tiden har "kanske" stannat, utför följande:</legend>
+          <label>1. Ta en lagbild med valfritt träd i bakgrunden</label>
           <input type="file" id="photo" accept="image/*">
           <img id="preview" style="display:none;width:100%;margin-top:.5rem;border-radius:8px;">
-          <label>2. Trädets latinska namn</label>
-          <input type="text" id="latin" placeholder="Ex: Quercus robur">
-          <label>3. Ditt lagnamn</label>
-          <input type="text" id="team" placeholder="Ex: Tigerlaget">
+          <label>2. Ange trädets namn på latin</label>
+          <input type="text" id="latin" placeholder="Ex: Ginkgo biloba">
+          <label>3. Ange lagnamn</label>
+          <input type="text" id="team" placeholder="Ex: FÄRG">
           <button id="submit" disabled>Skicka</button>
         </fieldset>
       </div>
       <div class="card summary" id="summary">
-        <h2>Sammanfattning</h2>
+        <h2>MÅL</h2>
         <div class="field"><strong>Latinskt namn:</strong> <span id="out-latin"></span></div>
         <div class="field"><strong>Lagnamn:</strong> <span id="out-team"></span></div>
         <div class="field"><strong>Tid:</strong> <span id="out-time"></span></div>
         <div class="field"><strong>Bild:</strong><br><img id="out-image" style="width:100%;border-radius:8px;"></div>
-        <p>📸 Ta en skärmdump och skicka till domaren.</p>
+        <p>📸 Ta en skärmdump och skicka till domare: 073 073 69 78</p>
       </div>`;
 
     // bind final-form
