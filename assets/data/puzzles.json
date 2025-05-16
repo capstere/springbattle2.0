@@ -12,6 +12,7 @@
       "type": "stego",
       "answer": "17",
       "img": "assets/images/stego.png",
+      "placeholder": "Siffra"
       "hint": "Andas och ta ett steg tillbaka"
     },
     {
@@ -19,6 +20,7 @@
       "type": "audio",
       "answer": "editpir",
       "src": "assets/audio/p3-chorus-rev.mp3",
+      "placeholder": "Svar"
       "hint": "Slutet är början"
     },
     {
@@ -30,6 +32,7 @@
       "prompt": "5: Avkoda morse-ljudet",
       "type": "morse",
       "src": "assets/audio/sos-morse.mp3",
+      "placeholder": "Svara med . och -"
       "hint": "Använd mellanslag",
       "answers": [
         "...---...",
