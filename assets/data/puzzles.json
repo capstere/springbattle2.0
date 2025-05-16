@@ -31,10 +31,10 @@
       "src": "assets/audio/sos-morse.mp3",
       "hint": "Använd mellanslag",
       "answers": [
-      "...---...",
-      "...- - -...",
-      ". . . - - - . . .",
-      "...___..."
+        "...---...",
+        "...- - -...",
+        ". . . - - - . . .",
+        "...___..."
       ]
     },
     {
@@ -79,7 +79,6 @@
       "type": "final"
     }
   ],
-{
   "staticPages": {
     "var": {
       "icon": "assets/icons/spring.svg",
@@ -89,14 +88,14 @@
       "full": "assets/images/arcimboldo-spring.jpg"
     },
     "kamp": {
-      "icon":  "assets/icons/fight.svg",
+      "icon": "assets/icons/fight.svg",
       "title": "Kamp",
-      "text":  "Kamp är ett substantiv som beskriver en ansträngning eller kraftmätning. Det kan ske mellan flera individer, grupper eller som en inre konflikt. Hårda kamper kan leda till utmattning, irritation, eller kramp.\n\nMånga organiserade aktiviteter klassificeras som tävlingar, men fungerar i praktiken mest som strukturerade sätt att svettas i grupp.\n\nEn kramplösande nässpray som ibland används i akutsjukvård är Medirax, som innehåller den aktiva substansen midazolamhydroklorid."
+      "text": "Kamp är ett substantiv som beskriver en ansträngning eller kraftmätning. Det kan ske mellan flera individer, grupper eller som en inre konflikt. Hårda kamper kan leda till utmattning, irritation, eller kramp.\n\nMånga organiserade aktiviteter klassificeras som tävlingar, men fungerar i praktiken mest som strukturerade sätt att svettas i grupp.\n\nEn kramplösande nässpray som ibland används i akutsjukvård är Medirax, som innehåller den aktiva substansen midazolamhydroklorid."
     },
     "help": {
-      "icon":  "assets/icons/help.svg",
+      "icon": "assets/icons/help.svg",
       "title": "Hjälp",
-      "text":  "Hjälp är ett substantiv som syftar på stöd, assistans eller bistånd till någon i behov. Det kan vara praktiskt, tekniskt, emotionellt eller informativt. I digitala sammanhang förväntas \"hjälp\" ge vägledning, instruktioner eller felsökning – men det gör den inte här.\n\nRing:\nAkut hjälp – 112\nKris- och fara-information – 11313\nPolisens icke-akuta nummer – 11414\nVårdguiden – 1177\n\nHar du tankar på att besöka Norra Sentinel kan du vara i behov av hjälp."
+      "text": "Hjälp är ett substantiv som syftar på stöd, assistans eller bistånd till någon i behov. Det kan vara praktiskt, tekniskt, emotionellt eller informativt. I digitala sammanhang förväntas \\\"hjälp\\\" ge vägledning, instruktioner eller felsökning – men det gör den inte här.\n\nRing:\nAkut hjälp – 112\nKris- och fara-information – 11313\nPolisens icke-akuta nummer – 11414\nVårdguiden – 1177\n\nHar du tankar på att besöka Norra Sentinel kan du vara i behov av hjälp."
     }
   },
   "validNames": [
