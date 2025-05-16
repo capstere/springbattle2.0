@@ -158,142 +158,143 @@
     }
   }
 
-  // 9) Rendera gåta
-  function renderPuzzle(i) {
-    const p = puzzles[i];
-    if (!p) return renderFinal();
+// 9) Rendera gåta
+function renderPuzzle(i) {
+  const p = puzzles[i];
+  if (!p) return renderFinal();
 
-    current = i;
-    localStorage.setItem(LS_CURRENT, String(i));
-    failCount = 0;
+  current = i;
+  localStorage.setItem(LS_CURRENT, String(i));
+  failCount = 0;
 
-    app.innerHTML = '';              // rensa allt
-    const card = document.createElement('div');
-    card.className = 'card';
-    // prompt
-    const prm = document.createElement('div');
-    prm.className = 'prompt';
-    prm.textContent = p.prompt;
-    card.append(prm);
+  app.innerHTML = '';              // rensa allt
+  const card = document.createElement('div');
+  card.className = 'card';
+  // prompt
+  const prm = document.createElement('div');
+  prm.className = 'prompt';
+  prm.textContent = p.prompt;
+  card.append(prm);
 
-    let inputEl, msgEl, hintEl;
+  let inputEl, msgEl, hintEl;
 
-    switch (p.type) {
-      case 'name':
-      case 'text':
-      case 'word':
-        inputEl = makeInput('text', p.placeholder || p.hint)
-        card.append(inputEl);
-        break;
+  switch (p.type) {
+    case 'name':
+    case 'text':
+    case 'word':
+      inputEl = makeInput('text', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'number':
-      case 'count':
-        if (p.img) card.append(makeImg(p.img));
-        inputEl = makeInput('number', p.hint);
-        card.append(inputEl);
-        break;
+    case 'number':
+    case 'count':
+      if (p.img) card.append(makeImg(p.img));
+      inputEl = makeInput('number', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'stego':
-        puzzleAudio = null;
-        const si = makeImg(p.img);
-        si.classList.add('stego-img');
-        si.style.filter = 'brightness(0)';
-        si.onclick = () => si.style.filter = '';
-        card.append(si);
-        inputEl = makeInput('text', p.placeholder || p.hint)
-        card.append(inputEl);
-        break;
+    case 'stego':
+      puzzleAudio = null;
+      const si = makeImg(p.img);
+      si.classList.add('stego-img');
+      si.style.filter = 'brightness(0)';
+      si.onclick = () => si.style.filter = '';
+      card.append(si);
+      inputEl = makeInput('text', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'audio':
-        puzzleAudio = new Audio(p.src);
-        puzzleAudio.preload = 'auto';
-        const btnB = document.createElement('button');
-        btnB.textContent = 'Spela baklänges';
-        btnB.onclick = () => {
-          puzzleAudio.currentTime = 0;
-          puzzleAudio.play().catch(()=>{});
-        };
-        card.append(btnB);
-        inputEl = makeInput('text', p.hint);
-        card.append(inputEl);
-        break;
+    case 'audio':
+      puzzleAudio = new Audio(p.src);
+      puzzleAudio.preload = 'auto';
+      const btnB = document.createElement('button');
+      btnB.textContent = 'Spela baklänges';
+      btnB.onclick = () => {
+        puzzleAudio.currentTime = 0;
+        puzzleAudio.play().catch(()=>{});
+      };
+      card.append(btnB);
+      inputEl = makeInput('text', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'morse':
-        puzzleAudio = new Audio(p.src);
-        puzzleAudio.preload = 'auto';
-        const btnM = document.createElement('button');
-        btnM.textContent = 'Spela morse';
-        btnM.onclick = () => {
-          puzzleAudio.currentTime = 0;
-          puzzleAudio.play().catch(()=>{});
-        };
-        card.append(btnM);
-        inputEl = makeInput('text', p.placeholder || p.hint)
-        card.append(inputEl);
-        break;
+    case 'morse':
+      puzzleAudio = new Audio(p.src);
+      puzzleAudio.preload = 'auto';
+      const btnM = document.createElement('button');
+      btnM.textContent = 'Spela morse';
+      btnM.onclick = () => {
+        puzzleAudio.currentTime = 0;
+        puzzleAudio.play().catch(()=>{});
+      };
+      card.append(btnM);
+      inputEl = makeInput('text', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'prime':
-        inputEl = makeInput('text', p.placeholder || p.hint)
-        card.append(inputEl);
-        break;
+    case 'prime':
+      inputEl = makeInput('text', p.placeholder || '');
+      card.append(inputEl);
+      break;
 
-      case 'magic':
-        const grid = document.createElement('div');
-        grid.className = 'magic-grid';
-        for (let r = 0; r < p.size; r++) {
-          for (let c = 0; c < p.size; c++) {
-            const cell = document.createElement('div');
-            const v = p.grid[r][c];
-            if (v === "") {
-              cell.className = 'magic-cell';
-              const inp = document.createElement('input');
-              inp.type = 'number';
-              cell.append(inp);
-            } else {
-              cell.className = 'magic-fixed';
-              cell.textContent = v;
-            }
-            grid.append(cell);
+    case 'magic':
+      const grid = document.createElement('div');
+      grid.className = 'magic-grid';
+      for (let r = 0; r < p.size; r++) {
+        for (let c = 0; c < p.size; c++) {
+          const cell = document.createElement('div');
+          const v = p.grid[r][c];
+          if (v === "") {
+            cell.className = 'magic-cell';
+            const inp = document.createElement('input');
+            inp.type = 'number';
+            cell.append(inp);
+          } else {
+            cell.className = 'magic-fixed';
+            cell.textContent = v;
           }
+          grid.append(cell);
         }
-        card.append(grid);
-        inputEl = grid;
-        break;
+      }
+      card.append(grid);
+      inputEl = grid;
+      break;
 
-      case 'final':
-        return renderFinal();
-    }
-
-    // fel- och alltid synligt hint
-    msgEl  = document.createElement('div');
-    msgEl.className = 'error-msg';
-    hintEl = document.createElement('div');
-    hintEl.className = 'hint-msg';
-    if (p.hint) hintEl.textContent = 'Tips: ' + p.hint;
-    card.append(msgEl, hintEl);
-
-    // Skicka-knapp
-    const sb = document.createElement('button');
-    sb.textContent = 'Skicka';
-    sb.onclick = () => checkAnswer(p, inputEl, msgEl, card);
-    card.append(sb);
-
-    app.append(card);
-    inputEl?.focus();
+    case 'final':
+      return renderFinal();
   }
 
-  function makeInput(type, placeholder) {
-    const i = document.createElement('input');
-    i.type = type;
-    i.placeholder = placeholder;
-    return i;
-  }
-  function makeImg(src) {
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = '';
-    return img;
-  }
+  // fel- och alltid synligt hint
+  msgEl  = document.createElement('div');
+  msgEl.className = 'error-msg';
+  hintEl = document.createElement('div');
+  hintEl.className = 'hint-msg';
+  if (p.hint) hintEl.textContent = 'Tips: ' + p.hint;
+  card.append(msgEl, hintEl);
+
+  // Skicka-knapp
+  const sb = document.createElement('button');
+  sb.textContent = 'Skicka';
+  sb.onclick = () => checkAnswer(p, inputEl, msgEl, card);
+  card.append(sb);
+
+  app.append(card);
+  inputEl?.focus();
+}
+
+function makeInput(type, placeholder) {
+  const i = document.createElement('input');
+  i.type = type;
+  i.placeholder = placeholder;
+  return i;
+}
+
+function makeImg(src) {
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = '';
+  return img;
+}
 
   // 10) Kontrollera svar
   function checkAnswer(p, inputEl, msgEl, card) {
