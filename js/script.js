@@ -391,7 +391,7 @@
     app.innerHTML = `
       <div class="card" id="final-form">
         <fieldset>
-          <legend>VÅR HÄLSAD! Tiden har "kanske" stannat, utför följande:</legend>
+          <legend>VÅR HÄLSAD! Tiden har kanske stannat, utför följande:</legend>
           <label>1. Ta en lagbild med valfritt träd i bakgrunden</label>
           <input type="file" id="photo" accept="image/*">
           <img id="preview" style="display:none;width:100%;margin-top:.5rem;border-radius:8px;">
